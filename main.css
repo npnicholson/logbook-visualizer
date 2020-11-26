@@ -1,0 +1,36 @@
+.handsontable .htDimmed {
+  /* color: yellow; */
+  /* background: blue; */
+  /* font-weight: bold; */
+  color: #363636
+}
+
+.ht_master tr td {
+  font-size: 9pt;
+}
+
+.handsontable .nowrap {
+  white-space: nowrap;
+}
+
+.handsontable .headerRow {
+  font-weight: bold;
+  font-size: 8pt;
+  vertical-align: middle;
+}
+
+.handsontable .totalRow {
+  font-weight: bold;
+  font-size: 9pt;
+  vertical-align: middle;
+}
+
+.handsontable .highlight {
+  background: #EEEEEE
+}
+
+.handsontable .remarks {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
