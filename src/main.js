@@ -564,7 +564,7 @@ doc_ready.then(async () => {
     }
 
     // Update with the initial view
-    if (csv_data) update()
+    // if (csv_data) update()
 
     // ----------------------------------------------------------------------
     // Key Input Handlers ---------------------------------------------------
@@ -611,6 +611,11 @@ doc_ready.then(async () => {
             cursor = 0
         }
 
+        else if (key_code == "KeyU") {
+            console.log("Forcing Update")
+            update()
+        }
+
         else if (key_code == "KeyN") {
             // Stop the normal actions from the 'n' key
             event.stopImmediatePropagation()
@@ -627,14 +632,22 @@ doc_ready.then(async () => {
                 reader.readAsText(file, 'UTF-8');
                 // here we tell the reader what to do when it's done reading...
                 reader.onload = readerEvent => {
+
+                    console.log("Loaded csv file from disk")
+
                     var content = readerEvent.target.result; // this is the content!
                     let results = parse_foreflight_csv(content)
                     aircraft_table = results.aircraft_table
                     flights_table = results.flights_table
 
+                    console.log(aircraft_table.data.length + " Aircraft Records Found")
+                    console.log(flights_table.data.length + " Flight Records Found")
+
                     // Adjust the cursor
                     if (cursor < -num_rows + 1) cursor = -num_rows + 1
                     else if (cursor > flights_table.data.length - 2) cursor = flights_table.data.length - 2
+
+                    console.log("Cursor set to " + cursor)
 
                     // update the screen
                     update()
@@ -657,7 +670,7 @@ doc_ready.then(async () => {
     hot.addHook('beforeKeyDown', handleKey);
 
     // Handle key input when the user is selected outside the table
-    hotkeys('right,left,up,down,[,],n', handleKey);
+    hotkeys('right,left,up,down,[,],n,u', handleKey);
 
 
     /*
