@@ -551,7 +551,7 @@ doc_ready.then(async () => {
     }
 
     // Update with the initial view
-    update()
+    if (csv_data) update()
 
     // ----------------------------------------------------------------------
     // Key Input Handlers ---------------------------------------------------
