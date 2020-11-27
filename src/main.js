@@ -344,9 +344,22 @@ doc_ready.then(async () => {
         return { aircraft_table, flights_table }
     }
 
+    let csv_data = false;
+    let aircraft_table = undefined,  flights_table = undefined
 
-    let csv_data = await fetch('data/logbook_n.csv').then(response => response.text())
-    let { aircraft_table, flights_table } = parse_foreflight_csv(csv_data)
+
+    // try {
+    //     let response =  await fetch('data/logbook_n.csv')
+    //     let csv_data = response.text()
+
+    //     let result = parse_foreflight_csv(csv_data)
+
+    //     aircraft_table = result.aircraft_table
+    //     flights_table  = result.flights_table
+
+    // } catch (err) {
+    //     console.log("Invalid CSV File")
+    // }
 
 
     console.log(aircraft_table)
