@@ -1,18 +1,17 @@
 // 'use strict';
 
-var cursor = 203
-
 // Wait for the document to be ready
 const doc_ready = new Promise((resolve, _) => document.addEventListener("DOMContentLoaded", event => resolve(event)));
 doc_ready.then(async () => {
-    
+
     // const Cookies = require("js.cookie");
 
     // var angular = require('angular');
     // var moment = require('moment');
 
     // Get the cursor from cookie if it exists
-    var cursor = Cookies.get('logbook_manager_cursor')
+    var cursor = localStorage.getItem('logbook_manager_cursor');
+
     // If the cursor cookie does not exist, then start at 0
     if (!cursor) cursor = 0
     // Otherwise, parse the cursor as an int
@@ -30,8 +29,8 @@ doc_ready.then(async () => {
         { label: 'Route of Flight', width: 45 * 2, sub_headers: ['From', 'To'], sub_tags: ['from', 'to'] },
         { label: '# Ap', width: 25, tag: 'inst_apps' },
         { label: 'Remarks and Endorsements', width: 240, tag: 'remarks' },
-        { label: '# TO', width: 25, tag: 'takeoffs' },
-        { label: '# LD', width: 25, tag: 'landings' },
+        { label: '# TO', width: 35, tag: 'takeoffs' },
+        { label: '# LD', width: 35, tag: 'landings' },
         { label: 'Aircraft Cat', width: 45 * 2, sub_headers: ['SEL', 'MEL'], sub_tags: ['sel', 'mel'] },
         { label: 'And Class', width: 45 * 2, sub_headers: ['', 'Dual Given'], sub_tags: [null, 'dual_given'] },
         { label: 'Conditions of Flight', width: 45 * 3, sub_headers: ['Night', 'Inst', 'Sim Inst'], sub_tags: ['night', 'inst', 'sim_inst'] },
@@ -214,11 +213,46 @@ doc_ready.then(async () => {
         colWidths: col_widths,
         mergeCells: merge_cells,
         readOnly: true,
+        selectionMode: 'single',
         disableVisualSelection: true,
         customBorders: border_settings,
         licenseKey: 'non-commercial-and-evaluation'
     }
     const hot = new Handsontable(container, settings);
+
+    var highlightedRow = null;
+    var lastRowClass = [];
+    const clearSelectionHighlight = () => {
+        if (highlightedRow != null) {
+            for (var i = 0; i < hot.countCols(); i++) {
+                let className = lastRowClass[i];
+                hot.setCellMeta(highlightedRow, i, 'className', className);
+            }
+            highlightedRow = null;
+            highlightedRow = null;
+        }
+    }
+
+    Handsontable.hooks.add('afterSelection', function (r, c) {
+
+        clearSelectionHighlight();
+
+        // Limit the selection highlighting to the viewable area
+        if (r >= 2 && r <= 14) {
+            for (var i = 0; i < hot.countCols(); i++) {
+                lastRowClass[i] = hot.getCellMeta(r, i).className;
+
+                let className = lastRowClass[i];
+                hot.setCellMeta(r, i, 'className', className + 'select');
+            }
+            highlightedRow = r;
+        } else {
+            highlightedRow = null;
+            lastRowClass = [];
+        }
+
+        hot.render();
+    });
 
     // Set the formating for each cell
     const highlighted_cols = [col_tags['inst_apps'], col_tags['takeoffs'], col_tags['landings'], col_tags['mel'], col_tags['night'], col_tags['sim_inst'], col_tags['xc'], col_tags['dual_received'], col_tags['total']]
@@ -236,7 +270,7 @@ doc_ready.then(async () => {
             else styles += "nowrap "
 
             // Highlight Cells
-            if (r > 1 && highlighted_cols.includes(c)) styles += 'highlight '
+            if (r > 1 && highlighted_cols.includes(c)) styles += 'greyHighlight '
 
             // Remarks
             if (r > 1 && r < row_translator(totals_page_row) && c === col_tags['remarks']) styles += 'remarks htLeft '
@@ -327,10 +361,10 @@ doc_ready.then(async () => {
 
             // A was before B
             if (a_date < b_date) return 1;
-            
+
             // A was after B
             else if (a_date > b_date) return -1;
-            
+
             // A and B happened on the same date
             else {
                 if (a.TimeOut && b.TimeOut) {
@@ -345,7 +379,7 @@ doc_ready.then(async () => {
     }
 
     let csv_data = false;
-    let aircraft_table = undefined,  flights_table = undefined
+    let aircraft_table = undefined, flights_table = undefined
 
 
     // try {
@@ -361,12 +395,6 @@ doc_ready.then(async () => {
     //     console.log("Invalid CSV File")
     // }
 
-
-    console.log(aircraft_table)
-    console.log(flights_table)
-
-
-
     // ----------------------------------------------------------------------
     // Update Method --------------------------------------------------------
     // ----------------------------------------------------------------------
@@ -380,6 +408,11 @@ doc_ready.then(async () => {
         return obj
     }
     const update = () => {
+
+        if (!flights_table) {
+            console.error("Flights Table Not Set");
+            return;
+        }
         // Build the change list for the current selection
         let changes = []
 
@@ -394,7 +427,7 @@ doc_ready.then(async () => {
 
             // Get the Flights Table entr
             let entry = flights_table.data[entry_idx]
-            if (entry_idx > -num_rows + 1 && entry_idx < flights_table.data.length - 1 && entry !== undefined) {
+            if (entry_idx > -num_rows + 1 && entry_idx < flights_table.data.length && entry !== undefined) {
 
                 // Get the ident of the aircraft
                 let ident = entry.AircraftID
@@ -475,6 +508,10 @@ doc_ready.then(async () => {
 
         for (let i = flights_table.data.length - 1; i >= cursor + num_rows; i--) {
             let entry = flights_table.data[i]
+
+            // If the entry is not valid, continue.
+            // TODO: Should this be a break instead?
+            if (!entry) continue;
 
             // Get the ident of the aircraft
             let ident = entry.AircraftID
@@ -560,7 +597,7 @@ doc_ready.then(async () => {
         hot.setDataAtCell(changes)
 
         // Store this cursor as a cookie
-        Cookies.set('logbook_manager_cursor', cursor);
+        localStorage.setItem('logbook_manager_cursor', cursor);
     }
 
     // Update with the initial view
@@ -577,49 +614,141 @@ doc_ready.then(async () => {
 
         // Go one entry back
         if (key_code == "ArrowUp") {
-            do_update = true;
-            cursor++
+
+            // Down without shift should move the view up
+            if (!event.shiftKey) {
+                // Flag for update
+                do_update = true;
+                // Move the cursor up
+                cursor++;
+
+                // If the highlighted row will still be on the visible screen, then change
+                // the selection. Otherwise clear the selection
+                if (highlightedRow) {
+                    if (highlightedRow + 1 < num_rows + 2) hot.selectCell(highlightedRow + 1, 0);
+                    else clearSelectionHighlight();
+                }
+            }
+
+            // Shift up should move the currently highlighted row up. Check that a row is
+            // highlighted first
+            else if (highlightedRow) {
+                // Get the flights table entry index for this row
+                let entryIdx = cursor + num_rows - highlightedRow + 1;
+
+                // Make sure that this entry is valid and has a valid entry above it
+                if (entryIdx < flights_table.data.length - 1 && entryIdx >= 0) {
+                    // Get the two entries to swap
+                    let entrySelected = flights_table.data[entryIdx]
+                    let entrySwap = flights_table.data[entryIdx + 1];
+
+                    // Swap the entries
+                    flights_table.data[entryIdx] = entrySwap;
+                    flights_table.data[entryIdx + 1] = entrySelected;
+
+                    // Update
+                    do_update = true;
+
+                    // Change the selection such that the highlight moves with this entry
+                    hot.selectCell(highlightedRow - 1, 0);
+                }
+            }
         }
 
         // Go one entry ahead
         else if (key_code == "ArrowDown") {
-            do_update = true;
-            cursor--
+
+            // Down without shift should move the view down
+            if (!event.shiftKey) {
+                // Flag for update
+                do_update = true;
+                // Move the cursor down
+                cursor--;
+
+                // If the highlighted row will still be on the visible screen, then change
+                // the selection. Otherwise clear the selection
+                if (highlightedRow) {
+                    if (highlightedRow - 1 >= 2) hot.selectCell(highlightedRow - 1, 0);
+                    else clearSelectionHighlight();
+                }
+            }
+
+            // Shift down should move the currently highlighted row down. Check that a row
+            // is highlighted first
+            else if (highlightedRow) {
+                // Get the flights table entry index for this row
+                let entryIdx = cursor + num_rows - highlightedRow + 1;
+
+                // Make sure that this entry is valid and has a valid entry below it
+                if (entryIdx < flights_table.data.length && entryIdx > 0) {
+                    // Get the two entries to swap
+                    let entrySelected = flights_table.data[entryIdx]
+                    let entrySwap = flights_table.data[entryIdx - 1];
+
+                    // Swap the entries
+                    flights_table.data[entryIdx] = entrySwap;
+                    flights_table.data[entryIdx - 1] = entrySelected;
+
+                    // Update
+                    do_update = true;
+
+                    // Change the selection such that the highlight moves with this entry
+                    hot.selectCell(highlightedRow + 1, 0);
+                }
+            }
         }
 
         // Go back one page
         else if (key_code == "ArrowLeft") {
             do_update = true;
-            cursor += num_rows
+            cursor += num_rows;
+
+            // Clear any highlight selection
+            clearSelectionHighlight();
         }
 
         // Go forward one page
         else if (key_code == "ArrowRight") {
             do_update = true;
-            cursor -= num_rows
+            cursor -= num_rows;
+
+            // Clear any highlight selection
+            clearSelectionHighlight();
         }
 
         // Go to the start
         else if (key_code == "BracketLeft") {
             do_update = true;
-            cursor = flights_table.data.length - num_rows - 1
+            cursor = flights_table.data.length - num_rows;
+
+            // Clear any highlight selection
+            clearSelectionHighlight();
         }
 
         // Go to the end
         else if (key_code == "BracketRight") {
             do_update = true;
-            cursor = 0
+            cursor = 0;
+
+            // Clear any highlight selection
+            clearSelectionHighlight();
         }
 
-        else if (key_code == "KeyU") {
-            console.log("Forcing Update")
-            update()
+        else if (key_code == "Escape") {
+            // Clear any highlight selection
+            clearSelectionHighlight();
+
+            // Update the screen
+            do_update = true;
         }
 
         else if (key_code == "KeyN") {
             // Stop the normal actions from the 'n' key
             event.stopImmediatePropagation()
             event.preventDefault();
+
+            // Clear any highlight selection
+            clearSelectionHighlight();
 
             // Prompt the user for a file uplad
             var input = document.createElement('input');
@@ -637,16 +766,19 @@ doc_ready.then(async () => {
 
                     var content = readerEvent.target.result; // this is the content!
                     let results = parse_foreflight_csv(content)
+
                     aircraft_table = results.aircraft_table
                     flights_table = results.flights_table
+
+                    localStorage.setItem('logbook_manager_aircraft_table', JSON.stringify(aircraft_table));
+                    localStorage.setItem('logbook_manager_flights_table', JSON.stringify(flights_table));
 
                     console.log(aircraft_table.data.length + " Aircraft Records Found")
                     console.log(flights_table.data.length + " Flight Records Found")
 
                     // Adjust the cursor
                     if (cursor < -num_rows + 1) cursor = -num_rows + 1
-                    else if (cursor > flights_table.data.length - 2) cursor = flights_table.data.length - 2
-
+                    else if (cursor > flights_table.data.length - 1) cursor = flights_table.data.length - 1
                     console.log("Cursor set to " + cursor)
 
                     // update the screen
@@ -656,12 +788,21 @@ doc_ready.then(async () => {
             input.click();
         }
 
-        else console.log(key_code)
+        // else console.log(key_code)
 
         if (do_update) {
 
+            // Stop the normal actions for this key input
             event.stopImmediatePropagation()
             event.preventDefault();
+
+            // Adjust the cursor before we update
+            // Prevent from scrolling into the future
+            if (cursor < -num_rows + 1) cursor = -num_rows + 1
+            // Prevent from scrolling into the past before the first logbook entry
+            else if (cursor > flights_table.data.length - 1) cursor = flights_table.data.length - 1
+
+            // update the screen
             update()
         }
     }
@@ -672,6 +813,21 @@ doc_ready.then(async () => {
     // Handle key input when the user is selected outside the table
     hotkeys('right,left,up,down,[,],n,u', handleKey);
 
+    // Issolated scope to preserve memory. Once the localStorage temp values are done being used,
+    // they can be released
+    {
+        let stored_aircraft_table = localStorage.getItem('logbook_manager_aircraft_table');
+        let stored_flights_table = localStorage.getItem('logbook_manager_flights_table');
+
+        if (stored_aircraft_table) aircraft_table = JSON.parse(stored_aircraft_table);
+        if (stored_flights_table) flights_table = JSON.parse(stored_flights_table);
+    }
+
+    console.log("Aircraft Table", aircraft_table);
+    console.log("Flights Table", flights_table);
+
+
+    if (aircraft_table && flights_table) update();
 
     /*
 
