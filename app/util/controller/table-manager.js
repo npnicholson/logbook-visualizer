@@ -236,7 +236,7 @@ define((require) => {
                     // Issolated scope to prevent data_obj from precisting
                     {
                         let data_obj = this.model.get(d_row, col_name)
-                        if (data_obj !== null) {
+                        if (data_obj !== null && data_obj !== undefined) {
                             data = formatter(data_obj.value);
                             modifier = data_obj.modifier;
                         }

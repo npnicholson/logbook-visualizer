@@ -65,13 +65,13 @@ define((require) => {
         model = new LogbookData({ on_data_changed });
         // Seperate scope to prevent memory usage after the storage is finished
         {
-            // let stored_data = get_data();
-            // if (stored_data) model.load(stored_data);
+            let stored_data = get_data();
+            if (stored_data) model.load(stored_data);
 
             // Get some testing data to use
-            let fetch_result = await fetch('data/logbook_latest.csv');
-            let csvData = await fetch_result.text();
-            model.parseForeflight(csvData);
+            // let fetch_result = await fetch('data/logbook_latest.csv');
+            // let csvData = await fetch_result.text();
+            // model.parseForeflight(csvData);
         }
 
         $('#upload').on('change', function () {
