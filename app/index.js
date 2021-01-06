@@ -2,7 +2,7 @@
 
 define((require) => {
 
-    console.log('a');
+    console.log('V0.0.1');
 
     // Load any app-specific modules
     // with a relative require call,
