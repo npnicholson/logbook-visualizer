@@ -1,0 +1,106 @@
+{
+    "aircraft": {
+        "id": "N7262X",
+        "category": "airplane | rotorcraft | glider | lighter than air | powered lift | powered parachute | weight-shift-control | simulator",
+        "class": "airplane_single_engine_land | airplane_multi_engine_land | airplane_single_engine_sea | airplane_multi_engine_sea | rotorcraft_helicopter | rotorcraft_gyroplane | glider | lighter_than_air_airship | lighter_than_air_balloon | powered_lift | powered_parachute_land | powered_parachute_sea | weight_shift_control_land | weight_shift_control_sea | full_flight_simulator | flight_training_device | aviation_training_device",
+        "is_complex": "true | false",
+        "is_high_performance": "true | false",
+        "is_pressurized": "true | false",
+        "type_code": "C172",
+        "year": "YYYY | null",
+        "make": "Cessna",
+        "model": "172R",
+        "engine": "diesel | electric | non-powered | piston | radial | turbofan | turbojet | turboprop | turboshaft",
+        "gear": {
+            "fixed": {
+                "tailwheel": "true | false",
+                "tricycle": "true | false",
+                "any": "true | false"
+            },
+            "retract": {
+                "tailwheel": "true | false",
+                "tricycle": "true | false",
+                "any": "true | false"
+            },
+            "amphibian": "true | false",
+            "floats": "true | false",
+            "skids": "true | false",
+            "skis": "true | false"
+        }
+    },
+    "date": "2020-11-23T00:00:00.000Z",
+    "cross_country": 0,
+    "ground_training": 0,
+    "night": 0,
+    "pic": 0,
+    "sic": 0,
+    "solo": 0,
+    "total": 0,
+    "mel": 0,
+    "sel": 0,
+    "instrument": {
+        "actual": 0,
+        "simulated": 0
+    },
+    "dual": {
+        "given": 0,
+        "received": 0
+    },
+    "time": {
+        "in": "hh:mm",
+        "out": "hh:mm",
+        "on": "hh:mm",
+        "off": "hh:mm"
+    },
+    "duty": {
+        "on": "hh:mm",
+        "off": "hh:mm"
+    },
+    "passengers": [
+        {
+            "name": "Frank Ellis",
+            "role": "pic | sic | instructor | student | safety pilot | examiner | passenger"
+        }
+    ],
+    "comments": "some sort of text",
+    "hobbs": {
+        "start": 0,
+        "end": 0
+    },
+    "tach": {
+        "start": 0,
+        "end": 0
+    },
+    "route": {
+        "from": "KLZU",
+        "route": "KAHN KCCO KHSV | null",
+        "to": "KLZU",
+        "distance": 0
+    },
+    "instructor": {
+        "name": "name | null",
+        "comments": "comments | null"
+    },
+    "operations": {
+        "landings": {
+            "all": 0,
+            "full_stop": {
+                "day": 0,
+                "night": 0
+            }
+        },
+        "takeoffs": {
+            "day": 0,
+            "night": 0
+        },
+        "approaches": [
+            "1;RNAV (GPS);18;KMDQ;"
+        ],
+        "holds": 0
+    },
+    "classifications": {
+        "is_checkride": false,
+        "is_flight_review": false,
+        "is_instrument_proficiency_check": false
+    }
+}

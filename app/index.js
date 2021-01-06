@@ -1,8 +1,324 @@
 // 'use strict';
 
-// Wait for the document to be ready
-const doc_ready = new Promise((resolve, _) => document.addEventListener("DOMContentLoaded", event => resolve(event)));
-doc_ready.then(async () => {
+define((require) => {
+
+    console.log('a');
+
+    // Load any app-specific modules
+    // with a relative require call,
+    // like:
+    var LogbookData = require('./util/model/logbook-data');
+    var LogbookStyler = require('./util/view/logbook-styler');
+    var TableManager = require('./util/controller/table-manager');
+
+    // Init vars
+    let model, styler, manager, hot;
+    let data_edited;
+
+    // Method that is called every time the data_clean flag is changed. This flag records
+    // whether or not the current data matches the original csv data
+    const on_data_changed = (event, ops) => {
+        // Do not update the localStorage if the data was just loaded
+        if (event != 'load') {
+
+            // Store the new data
+            localStorage.setItem('logbook_manager_entries', JSON.stringify(model.entries));
+
+            // If this was a set or swap event, then the data has been changed
+            if (event == 'set' || event == 'swap') data_edited = true;
+
+            // If this is a parse event, then this is new data that has not been changed yet
+            else if (event == 'parse') data_edited = false;
+
+            // Store whether or not the data has changed
+            localStorage.setItem('logbook_manager_entries_edited', data_edited);
+        }
+
+        $('#data_edited').text(data_edited ? 'Modified' : 'Same');
+    }
+
+    const get_data = () => {
+        // Store whether or not the data is clean. 
+        data_edited = localStorage.getItem('logbook_manager_entries_edited');
+        if (data_edited === null) data_edited = false;
+        else data_edited = data_edited == 'true' ? true : false;
+
+
+        // Get the stored text from localstorage
+        let stored_entries = localStorage.getItem('logbook_manager_entries');
+
+        // If the stored value is undefined, return []
+        if (stored_entries === null) return false;
+
+        // Parse the stored entries
+        let parsed_entries = JSON.parse(stored_entries);
+
+        // If the parsed data is not an array, return []
+        if (!Array.isArray(parsed_entries)) return false;
+
+        // Return the entries
+        return parsed_entries;
+    }
+
+    let main = async () => {
+        // Build the model from the imported csv data
+        model = new LogbookData({ on_data_changed });
+        // Seperate scope to prevent memory usage after the storage is finished
+        {
+            // let stored_data = get_data();
+            // if (stored_data) model.load(stored_data);
+
+            // Get some testing data to use
+            let fetch_result = await fetch('data/logbook_latest.csv');
+            let csvData = await fetch_result.text();
+            model.parseForeflight(csvData);
+        }
+
+        $('#upload').on('change', function () {
+            console.log("Click!")
+            var file = $('#upload').prop('files')[0];
+
+            // file.accessed = Date.now();
+            localStorage.setItem('logbook_manager_file_data', JSON.stringify({
+                accessed: Date.now(),
+                lastModified: file.lastModified,
+                name: file.name,
+                size: file.size,
+                type: file.type
+            }));
+
+            // setting up the reader
+            var reader = new FileReader();
+            reader.readAsText(file, 'UTF-8');
+            // here we tell the reader what to do when it's done reading...
+            reader.onload = readerEvent => {
+                model.parseForeflight(readerEvent.target.result);
+                manager.render();
+            }
+        });
+
+
+        // console.log(model.entries)
+
+        const counter_formatter = (val) => {
+            if (val === null || val === 0) return '';
+            else return val;
+        }
+
+        const time_formatter = (val) => {
+            if (isNaN(val)) return val;
+            else if (val === null) return '';
+            else if (val !== 0) return val.toFixed(1);
+            else return '';
+        }
+
+        // Build a string from the approach list
+        const array_tooltip = (row_data) => {
+            if (row_data == null) return null;
+            let output = "";
+            for (let app of row_data.operations.approaches_list.value) {
+                output += app.approach + " " + app.runway + " @ " + app.airport + "<br>";
+            }
+            return output;
+        }
+
+        const columns = [
+            { cols: [{ width: 65, sum: false, source: 'date.short', title: 'Date', highlight: false }] },
+            { cols: [{ width: 55, sum: false, source: 'aircraft.type', title: 'Aircraft Type', highlight: false }] },
+            { cols: [{ width: 65, sum: false, source: 'aircraft.id', title: 'Aircraft Ident', highlight: false }] },
+            {
+                title: 'Route of Flight', cols: [
+                    { width: 45, sum: false, source: 'route.from', title: 'From', highlight: false },
+                    { width: 45, sum: false, source: 'route.via', tooltip: true, title: 'Via', highlight: false },
+                    { width: 45, sum: false, source: 'route.to', title: 'To', highlight: false }
+                ]
+            },
+            { cols: [{ width: 25, sum: false, source: 'operations.approaches', tooltip: array_tooltip, title: '# AP', formatter: counter_formatter, highlight: true }] },
+            { cols: [{ width: 25, sum: false, source: 'operations.holds', title: '# H', formatter: counter_formatter, highlight: true }] },
+            { cols: [{ width: 240, sum: false, source: 'comments', tooltip: true, title: 'Remarks and Endorsements', highlight: false, text: true }] },
+            { cols: [{ width: 35, sum: true, source: 'operations.takeoffs.all', title: '# TO', formatter: counter_formatter, highlight: true }] },
+            { cols: [{ width: 35, sum: true, source: 'operations.landings.all', title: '# LD', formatter: counter_formatter, highlight: true }] },
+            {
+                title: 'Aircraft Cat', cols: [
+                    { width: 45, sum: true, source: 'class.airplane.single_engine_land', title: 'SEL', formatter: time_formatter, highlight: false },
+                    { width: 45, sum: true, source: 'class.airplane.multi_engine_land', title: 'MEL', formatter: time_formatter, highlight: true }
+                ]
+            },
+            {
+                title: 'And Class', cols: [
+                    // { width: 45, sum: false, source: null, title: '', highlight: false },
+                    { width: 45, sum: true, source: 'gear.retract.any', title: 'Retract', formatter: time_formatter, highlight: false },
+                    { width: 45, sum: true, source: 'dual.given', title: 'Dual Given', formatter: time_formatter, highlight: false }
+                ]
+            },
+            {
+                title: 'Conditions of Flight', cols: [
+                    { width: 45, sum: true, source: 'night', title: 'Night', formatter: time_formatter, highlight: true },
+                    { width: 45, sum: true, source: 'instrument.actual', title: 'Inst', formatter: time_formatter, highlight: false },
+                    { width: 45, sum: true, source: 'instrument.simulated', title: 'Sim Inst', formatter: time_formatter, highlight: true }
+                ]
+            },
+            { cols: [{ width: 45, sum: true, source: 'class.simulator.flight_training_device', title: 'Flight Sim', formatter: time_formatter, highlight: false }] },
+            {
+                title: 'Conditions of Flight', cols: [
+                    { width: 45, sum: true, source: 'cross_country', title: 'XC', formatter: time_formatter, highlight: true },
+                    { width: 45, sum: true, source: 'solo', title: 'Solo', formatter: time_formatter, highlight: false },
+                    { width: 45, sum: true, source: 'dual.received', title: 'Dual Rec', formatter: time_formatter, highlight: true },
+                    { width: 45, sum: true, source: 'pic', title: 'PIC', formatter: time_formatter, highlight: false }
+                ]
+            },
+            { cols: [{ width: 45, sum: true, source: 'total', title: 'Total Time', highlight: true }] }
+        ]
+
+        // Set up te styler
+        styler = new LogbookStyler({ columns });
+
+        // Build the style
+        styler.build();
+
+        // Define custom changes to be made to the styler
+        let [page_total_row, _] = styler.get_page_total_position();
+        styler.add_merge({ row: page_total_row, col: 0, colspan: styler.summation_start, rowspan: 3 });
+        styler.set_data(page_total_row, 0, 'I am certify that the entries in this log are true,\n_________________________________\nPILOT SIGNATURE');
+
+        // Set up the manager
+        let container = document.getElementById('logbook');
+        manager = new TableManager(container, { styler, model });
+        hot = manager.init();
+
+        console.log(manager);
+        console.log(styler);
+        console.log(model);
+
+        // Add a handler for after a user selection so that we can select rows
+        hot.addHook('afterSelection', (r, c) => {
+            // If the user's selection is within the view, then select the row
+            if (styler.row_within_view(r)) manager.select(r, c);
+
+            // Otherwise, clear any selections
+            else manager.clear_selection(true);
+        });
+
+        // Handler for key events
+        const handleKey = (event) => {
+            // Only handle key inputs if the user is not currently editing 
+            // a cell in the table
+            if (manager.last_selected.row === null) {
+
+                // Set up some vars
+                let do_update = false;
+                let key_code = event.code
+
+                // Go one entry back
+                if (key_code == "ArrowUp") {
+                    do_update = true;
+                    if (!event.shiftKey) manager.up();
+                    else manager.swap_up();
+                }
+
+                // Go one entry ahead
+                else if (key_code == "ArrowDown") {
+                    do_update = true;
+                    if (!event.shiftKey) manager.down();
+                    else manager.swap_down();
+                }
+
+                else if (!event.shiftKey && key_code == "Tab") {
+                    do_update = true;
+                    manager.next();
+                }
+
+                else if (event.shiftKey && key_code == "Tab") {
+                    do_update = true;
+                    manager.prev();
+                }
+
+                // Go back one page
+                else if (key_code == "ArrowLeft") {
+                    do_update = true;
+                    manager.prev();
+                }
+
+                // Go forward one page
+                else if (key_code == "ArrowRight") {
+                    do_update = true;
+                    manager.next();
+                }
+
+                // Go to the start
+                else if (key_code == "BracketLeft") {
+                    do_update = true;
+                    manager.start();
+                }
+
+                // Go to the end
+                else if (key_code == "BracketRight") {
+                    do_update = true;
+                    manager.end();
+                }
+
+                // Select next
+                else if (key_code == "Comma") {
+                    do_update = true;
+                    manager.select_up();
+                }
+
+                // Select Prev
+                else if (key_code == "Period") {
+                    do_update = true;
+                    manager.select_down();
+                }
+
+                else if (key_code == "Backslash") {
+                    // do_update = true;
+
+                    console.log("Destroy");
+
+                    $('#upload').click();
+                }
+
+                else if (key_code == "Escape") {
+                    do_update = true;
+                    manager.clear_selection();
+                }
+
+                else if (key_code == "Enter") {
+                    do_update = true;
+                    manager.select_down();
+                }
+
+                else {
+                    console.log("Selected ", key_code);
+                }
+
+                if (do_update) {
+                    // Stop the normal actions for this key input
+                    event.stopImmediatePropagation()
+                    event.preventDefault();
+
+                    // Render the manager
+                    manager.render();
+                }
+            }
+        }
+
+        // Handle key input when the user is selected on the table
+        hot.addHook('beforeKeyDown', handleKey);
+
+        // Handle key input when the user is selected outside the table
+        hotkeys('right,left,up,down,[,],n,u,escape,enter,tab,\\', handleKey);
+    }
+
+    main();
+
+
+
+    /*
+
+
+    // console.log(l);
+
+    // const LogbookData = require('./util/logbook-data.js')
 
     // const Cookies = require("js.cookie");
 
@@ -233,26 +549,80 @@ doc_ready.then(async () => {
         }
     }
 
+    let lastSelectedCell = {
+        r: null,
+        c: null
+    };
+
+    // Remarks, TO, LDG, Dual Given, Night, Inst, Sim Inst, FTD, XC, Solo, Dual Rec, PIC, Total
+    const editableCols = [6, 7, 8, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
     Handsontable.hooks.add('afterSelection', function (r, c) {
 
         clearSelectionHighlight();
 
         // Limit the selection highlighting to the viewable area
         if (r >= 2 && r <= 14) {
+            // Go through eacl cell in this row and apply the 'select' class
             for (var i = 0; i < hot.countCols(); i++) {
                 lastRowClass[i] = hot.getCellMeta(r, i).className;
 
                 let className = lastRowClass[i];
                 hot.setCellMeta(r, i, 'className', className + 'select');
             }
+            // Record this as the highlighted row
             highlightedRow = r;
-        } else {
+
+            // If there was a last selection
+            if (lastSelectedCell.r && lastSelectedCell.c) {
+                // If this selection is the same as last selection, then make it editable
+                if (r == lastSelectedCell.r && c == lastSelectedCell.c && editableCols.includes(c)) hot.setCellMeta(r, c, 'readOnly', false);
+
+                // Otherwise, make the last selected cell readonly
+                else hot.setCellMeta(lastSelectedCell.r, lastSelectedCell.c, 'readOnly', true);
+            }
+            // Record this cell as the last selected cell
+            lastSelectedCell.r = r; lastSelectedCell.c = c;
+
+        }
+        // If the user selects outside the viewable area, then clear the selection
+        else {
             highlightedRow = null;
             lastRowClass = [];
         }
 
+        // Render the table with these new changes
         hot.render();
     });
+
+    Handsontable.hooks.add('afterChange', function (change, source) {
+        // Only listen for edit undo, edit redo, and basic edits
+        if (source == 'UndoRedo.undo' || source == 'UndoRedo.redo' || source == 'edit') {
+
+            // Only look at edits with a single change. This limits our search to only those edits
+            // which the user made. Automated edits can edit hundreds of cells at once
+            if (change.length == 1) {
+                console.log(change, source);
+                let edit = change[0];
+
+                let r = edit[0],
+                    c = edit[1];
+
+                let last = edit[2];
+                let update = edit[3];
+
+                let entryIdx = cursor + num_rows - r + 1;
+                let entry = flights_table.data[entryIdx];
+
+                let metrics = ['Date',]
+
+                console.log(r, c, parseInt(update), entryIdx, entry);
+
+                console.log(col_tags);
+
+            }
+        }
+    });
+
 
     // Set the formating for each cell
     const highlighted_cols = [col_tags['inst_apps'], col_tags['takeoffs'], col_tags['landings'], col_tags['mel'], col_tags['night'], col_tags['sim_inst'], col_tags['xc'], col_tags['dual_received'], col_tags['total']]
@@ -410,7 +780,7 @@ doc_ready.then(async () => {
     const update = () => {
 
         if (!flights_table) {
-            console.error("Flights Table Not Set");
+            console.error("Flights Table Empty. Please import by pressing 'n'");
             return;
         }
         // Build the change list for the current selection
@@ -430,12 +800,19 @@ doc_ready.then(async () => {
             if (entry_idx > -num_rows + 1 && entry_idx < flights_table.data.length && entry !== undefined) {
 
                 // Get the ident of the aircraft
-                let ident = entry.AircraftID
+                let ident = entry.AircraftID;
 
                 // Get the aircraft for for this aircraft id
                 let aircraft = { TypeCode: "UNKN", Class: "UNKN" }
                 for (let craft of aircraft_table.data) {
                     if (craft.AircraftID == ident) {
+                        // Check that the correct aircraft fields exist
+                        if (!craft.Class || !craft.TypeCode) {
+                            console.error('Aircraft ' + craft.AircraftID + ' is missing Class or Typecode Information! Class: ' + craft.Class + ', Typecode: ' + craft.TypeCode + '. Records concerning this aircraft will be inaccurate');
+                            break;
+                        }
+
+                        // Apply this aircraft
                         aircraft = craft;
                         break;
                     }
@@ -847,4 +1224,6 @@ doc_ready.then(async () => {
     // }, 1000);
 
     */
-})
+
+});
+

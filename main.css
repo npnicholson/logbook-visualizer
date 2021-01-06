@@ -30,11 +30,38 @@
 }
 
 .handsontable .remarks {
-  white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
 }
 
 .handsontable .select {
   background: #e0eaf9 !important;
+}
+
+.handsontable .edited {
+  background: #f8e681 !important;
+}
+
+/** Bootstrap Tooltip Style **/
+
+/* Change the final opacity to 1 */
+
+.tooltip.in {
+  opacity: 1!important;
+}
+
+/* Set up the tooltip's inner style */
+
+.tooltip-inner {
+  display: inline-block;
+  position: relative;
+  text-align: left;
+  color: #333;
+  background-color: white;
+  border-width: 1px;
+  border-style: solid;
+  border-color: black;
+  border-radius: 2px;
+  padding: 5px 10px 5px 10px;
+  filter: drop-shadow(rgba(0, 0, 0, 0.2) 0 2px 3px);
 }

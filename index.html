@@ -4,27 +4,28 @@
 <head>
     <meta charset="utf-8">
     <title>Logbook</title>
-    <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    <!-- Import Statements -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
     <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/js-cookie@2.2.1/src/js.cookie.min.js"></script> -->
-    <!-- <script src="https://cdn.date-fns.org/v1.9.0/date_fns.min.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.9.0/date_fns.min.js"></script>
 
-    
 
-    <script type="text/javascript" src="./src/main.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://handsontable.com/static/css/main.css">
-    <link rel="stylesheet" type="text/css" href="main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" >
+    <link rel="stylesheet" href="main.css">
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 </head>
 
 <body>
-    <div id="example"></div>
-    <!-- <div>N for</div> -->
+    <div id="logbook"></div>
+    <input id="upload" type='file' accept=".csv"/>
+    <span id="data_edited">Matched</span>
+    <script data-main="app" src="lib/require.js"></script>
 </body>
-
-
-
