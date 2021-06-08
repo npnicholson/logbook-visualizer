@@ -170,8 +170,67 @@ define((require) => {
             { cols: [{ width: 45, sum: true, source: 'total', title: 'Total Time', highlight: true }] }
         ]
 
+        const secondary_col = [
+            { cols: [{ width: 60, sum: false, source: 'date.short', title: 'Date', highlight: false }] },
+            { cols: [{ width: 55, sum: false, source: 'aircraft.type', title: 'Aircraft Type', highlight: false }] },
+            { cols: [{ width: 65, sum: false, source: 'aircraft.id', title: 'Aircraft Ident', highlight: false }] },
+            {
+                title: 'Route of Flight', cols: [
+                    { width: 45, sum: false, source: 'route.from', title: 'From', highlight: false },
+                    { width: 45, sum: false, source: 'route.via', tooltip: true, title: 'Via', highlight: false },
+                    { width: 45, sum: false, source: 'route.to', title: 'To', highlight: false }
+                ]
+            },
+            { cols: [{ width: 45, sum: true, source: 'total', title: 'Total', highlight: true }] },
+            {
+                title: 'Aircraft Category & Class', cols: [
+                    { width: 45, sum: true, source: 'class.airplane.single_engine_land', title: 'SEL', formatter: time_formatter, highlight: false },
+                    { width: 45, sum: true, source: 'class.airplane.multi_engine_land', title: 'MEL', formatter: time_formatter, highlight: true },
+                    { width: 45, sum: false, source: null, title: '', highlight: false },
+                    { width: 45, sum: false, source: null, title: '', highlight: true },
+                ]
+            },
+
+            {
+                title: 'Instrument', cols: [
+                    { width: 45, sum: true, source: 'instrument.actual', title: 'Inst', formatter: time_formatter, highlight: false },
+                    { width: 45, sum: true, source: 'instrument.simulated', title: 'Sim Inst', formatter: time_formatter, highlight: true },
+                    { width: 25, sum: false, source: 'operations.approaches', tooltip: array_tooltip, title: '# A', formatter: counter_formatter, highlight: false },
+                    { width: 25, sum: false, source: 'operations.holds', title: '# H', formatter: counter_formatter, highlight: true },
+                    { width: 45, sum: false, source: null, title: 'Nav / Track', highlight: false },
+                    // { width: 45, sum: true, source: 'gear.retract.any', title: 'Retract', formatter: time_formatter, highlight: false },
+                ]
+            },
+
+            { cols: [{ width: 45, sum: true, source: 'class.simulator.flight_training_device', title: 'Sim or ATD', formatter: time_formatter, highlight: true }] },
+
+            {
+                title: 'Landings', cols: [
+                    { width: 35, sum: true, source: 'operations.landings.all', title: 'All', formatter: counter_formatter, highlight: false },
+                    { width: 35, sum: true, source: 'operations.landings.full_stop.day', title: 'Day', formatter: counter_formatter, highlight: false },
+                    { width: 35, sum: true, source: 'operations.landings.full_stop.night', title: 'Night', formatter: counter_formatter, highlight: true }
+                ]
+            },
+
+            {
+                title: 'Type of Pilot Experience or Training', cols: [
+                    { width: 45, sum: false, source: 'ground_training', title: 'Ground Rec', formatter: time_formatter, highlight: false },
+                    { width: 45, sum: true, source: 'dual.received', title: 'Dual Rec', formatter: time_formatter, highlight: true },
+                    { width: 45, sum: true, source: 'cross_country', title: 'XC', formatter: time_formatter, highlight: false },
+                    { width: 45, sum: true, source: 'night', title: 'Night', formatter: time_formatter, highlight: true },
+                    { width: 45, sum: true, source: 'solo', title: 'Solo', formatter: time_formatter, highlight: false },
+                    { width: 45, sum: true, source: 'pic', title: 'PIC', formatter: time_formatter, highlight: true },
+                    { width: 45, sum: true, source: 'sic', title: 'SIC', formatter: time_formatter, highlight: false },
+                    { width: 45, sum: true, source: 'dual.given', title: 'Dual Given', formatter: time_formatter, highlight: true },
+                    { width: 45, sum: true, source: null, title: 'Ground Given', formatter: time_formatter, highlight: false }
+                ]
+            },
+
+            { cols: [{ width: 240, sum: false, source: 'comments', tooltip: true, title: 'Remarks and Endorsements', highlight: false, text: true }] },     
+        ]
+
         // Set up te styler
-        styler = new LogbookStyler({ columns });
+        styler = new LogbookStyler({ columns: secondary_col, row_border_offset: 3, row_border_spacing: 4, num_rows: 16 });
 
         // Build the style
         styler.build();
@@ -285,6 +344,10 @@ define((require) => {
                 else if (key_code == "Enter") {
                     do_update = true;
                     manager.select_down();
+                }
+
+                else if (key_code == "KeyN") {
+                    console.log("Letter N");
                 }
 
                 else {

@@ -17,7 +17,7 @@ define((require) => {
             // Load the stored cursor
             this.load_cursor();
 
-            console.log("Loaded Cursor", this.cursor)
+            console.log("Loaded Cursor", this.cursor);
 
             this.entry_translater = entry_translater;
             this.total_translater = total_translater;
@@ -247,7 +247,7 @@ define((require) => {
                         style_changes.push([this.styler.row_view_to_hot(page_row), col, 'edited']);
                     }
 
-                    // If this column has a tooltip, then add a tooltop to this cell
+                    // If this column has a tooltip, then add a tooltop to this cell2
                     if (tooltip) {
                         // Get the container for this cell
                         let cell = this.hot.getCell(this.styler.row_view_to_hot(page_row), col);

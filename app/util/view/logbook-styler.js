@@ -122,7 +122,7 @@ define((require) => {
                     this.tooltip[this.num_cols] = col.tooltip;
 
                     // Add the width to the col_widths list
-                    this.col_widths.push(col.width)
+                    this.col_widths.push(col.width);
 
                     // Add the field title to the top row
                     h0.push(col.title);
@@ -161,13 +161,13 @@ define((require) => {
                         this.tooltip[this.num_cols] = col.tooltip;
 
                         // Add the width to the col_widths list
-                        this.col_widths.push(col.width)
+                        this.col_widths.push(col.width);
 
                         // The top row is the header title
                         h0.push(entry.title);
 
                         // The bottom row is the column title
-                        h1.push(col.title)
+                        h1.push(col.title);
 
                         // Find the start of the summation area (the first summed column)
                         if (col.sum && this.summation_start == -1) this.summation_start = this.num_cols - 1;
@@ -260,46 +260,46 @@ define((require) => {
                 if ('row' in field && !('col' in field)) entry.range = {
                     from: { row: field.row, col: 0 },
                     to: { row: field.row, col: this.num_cols }
-                }
+                };
 
                 // Cols and not rows
                 if ('col' in field && !('row' in field)) entry.range = {
                     from: { row: 0, col: field.col },
                     to: { row: this.row_view_to_hot(this.num_rows - 1) + 3, col: field.col }
-                }
+                };
 
                 // Cols and  rows
                 if ('row' in field && 'col' in field) entry.range = {
                     from: { row: field.row, col: field.col },
                     to: { row: field.row, col: field.col },
-                }
+                };
 
                 // Top Border
                 if ('top' in field) entry.top = {
                     width: 2,
                     color: field.top
-                }
+                };
 
                 // Bottom Border
                 if ('bottom' in field) entry.bottom = {
                     width: 2,
                     color: field.bottom
-                }
+                };
 
                 // Left Border
                 if ('left' in field) entry.left = {
                     width: 2,
                     color: field.left
-                }
+                };
 
                 // Right Border
                 if ('right' in field) entry.right = {
                     width: 2,
                     color: field.right
-                }
+                };
 
                 // Apply the border settings
-                this.borders.push(entry)
+                this.borders.push(entry);
             }
 
             // Add the auto border settings (row seperators, header and footer seperators, etc)
@@ -389,11 +389,11 @@ define((require) => {
                     let styles = this.wrap_text ? 'wrap ' : 'nowrap ';
 
                     // Highlight Cells
-                    if (this.style.highlight.includes(c)) styles += 'greyHighlight '
+                    if (this.style.highlight.includes(c)) styles += 'greyHighlight ';
 
                     // Text Cells
-                    if (this.style.text.includes(c)) styles += 'remarks htLeft  '
-                    else styles += 'htCenter '
+                    if (this.style.text.includes(c)) styles += 'remarks htLeft  ';
+                    else styles += 'htCenter ';
 
                     // Add this style to the cell styles
                     this.cell_style[this.cell_style.length - 1][c] = styles;
@@ -466,7 +466,7 @@ define((require) => {
                 page_row: this.row_view_to_hot(this.total_source.page),
                 forward_row: this.row_view_to_hot(this.total_source.forward),
                 grand_row: this.row_view_to_hot(this.total_source.grand)
-            }
+            };
         }
 
         // Returns the style for the given true HOT row and col
@@ -490,7 +490,7 @@ define((require) => {
             for (let r = 0; r < this.cell_style.length; r++)
                 for (let c = 0; c < this.cell_style[r].length; c++) {
                     // console.log(r, c, this.cell_style[r][c]);   
-                    hot.setCellMeta(r, c, 'className', this.cell_style[r][c])
+                    hot.setCellMeta(r, c, 'className', this.cell_style[r][c]);
                 }
 
             hot.render();
@@ -510,4 +510,4 @@ define((require) => {
     }
 
     return LogbookStyler;
-})
+});
