@@ -29,7 +29,11 @@
         }
     },
     "date": "2020-11-23T00:00:00.000Z",
-    "cross_country": 0,
+    "cross_country": {
+        "atp": 0,
+        "point_to_point": 0,
+        "normal": 0
+    },
     "ground_training": 0,
     "night": 0,
     "pic": 0,

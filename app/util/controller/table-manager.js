@@ -205,7 +205,7 @@ define((require) => {
             // Store the cursor
             this.store_cursor();
 
-            // Remove all tooltops within the container
+            // Remove all tooltips within the container
             // $('body').tooltip('dispose');
             $('body').tooltip('destroy');
         
@@ -252,9 +252,8 @@ define((require) => {
                         // Get the container for this cell
                         let cell = this.hot.getCell(this.styler.row_view_to_hot(page_row), col);
 
-                        // By default, lets assume that the tooltip is a boolean true. This would denote 
-                        // the tooltop should reference this specific value
-                        let tooltip_data = data;
+                        // By default let's assume the tooltip should be blank
+                        let tooltip_data = '';
 
                         // If the tooltip is a string, then it is refering to another value from the entry to display
                         if (typeof tooltip == 'string') {
@@ -262,9 +261,19 @@ define((require) => {
                             tooltip_data = this.model.get_value(d_row, tooltip);
                             // If the tooltip is an empty list, then set it to null instead
                             if (Array.isArray(tooltip_data) && tooltip_data.length == 0) tooltip_data = null;
-                        } else if (typeof tooltip == 'function') {
+                        } 
+                        
+                        // If the tooltip is a function, then call the function to determine the tooltip
+                        else if (typeof tooltip == 'function') {
                             // Run the tooltip with the entire entry's worth of data
                             tooltip_data = tooltip(this.model.get(d_row));
+                        } 
+                        
+                        // If the tooltip is a simple boolean true, then display any tooltip within the 
+                        // data entry (usially for explaining how or why a value was calculated a certain way)
+                        else if (typeof tooltip == 'boolean') {
+                            const d = this.model.get(d_row, col_name);
+                            if (d) tooltip_data = d.tooltip
                         }
 
                         // If there is actually data to display in the tooltip, then do so
@@ -316,7 +325,6 @@ define((require) => {
                     // Grand Total starts at the start of the data and ends at page_end_idx
                     data = formatter(this.model.sum(col_name, page_end_idx));
                     changes.push([grand_row, col, data]);
-
                 }
             }
 

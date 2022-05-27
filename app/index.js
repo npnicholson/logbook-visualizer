@@ -122,6 +122,14 @@ define((require) => {
             return output;
         }
 
+        // Reach in and grab the internal tooltip param of the given value
+        const ptp_cross_country_tooltip = (row_data) => {
+            if (row_data == null) return null;
+            console.log('r', row_data);
+            console.log(row_data.cross_country.point_to_point.tooltip);
+            return row_data.cross_country.point_to_point.tooltip;
+        }
+
         const columns = [
             { cols: [{ width: 65, sum: false, source: 'date.short', title: 'Date', highlight: false }] },
             { cols: [{ width: 55, sum: false, source: 'aircraft.type', title: 'Aircraft Type', highlight: false }] },
@@ -129,13 +137,13 @@ define((require) => {
             {
                 title: 'Route of Flight', cols: [
                     { width: 45, sum: false, source: 'route.from', title: 'From', highlight: false },
-                    { width: 45, sum: false, source: 'route.via', tooltip: true, title: 'Via', highlight: false },
+                    { width: 45, sum: false, source: 'route.via', tooltip: 'route.via', title: 'Via', highlight: false },
                     { width: 45, sum: false, source: 'route.to', title: 'To', highlight: false }
                 ]
             },
             { cols: [{ width: 25, sum: false, source: 'operations.approaches', tooltip: array_tooltip, title: '# AP', formatter: counter_formatter, highlight: true }] },
             { cols: [{ width: 25, sum: false, source: 'operations.holds', title: '# H', formatter: counter_formatter, highlight: true }] },
-            { cols: [{ width: 240, sum: false, source: 'comments', tooltip: true, title: 'Remarks and Endorsements', highlight: false, text: true }] },
+            { cols: [{ width: 240, sum: false, source: 'comments', tooltip: 'comments', title: 'Remarks and Endorsements', highlight: false, text: true }] },
             { cols: [{ width: 35, sum: true, source: 'operations.takeoffs.all', title: '# TO', formatter: counter_formatter, highlight: true }] },
             { cols: [{ width: 35, sum: true, source: 'operations.landings.all', title: '# LD', formatter: counter_formatter, highlight: true }] },
             {
@@ -161,13 +169,14 @@ define((require) => {
             { cols: [{ width: 45, sum: true, source: 'class.simulator.flight_training_device', title: 'Flight Sim', formatter: time_formatter, highlight: false }] },
             {
                 title: 'Conditions of Flight', cols: [
-                    { width: 45, sum: true, source: 'cross_country', title: 'XC', formatter: time_formatter, highlight: true },
+                    { width: 45, sum: true, source: 'cross_country.normal', title: 'XC', formatter: time_formatter, highlight: true },
+                    { width: 45, sum: true, source: 'cross_country.point_to_point', tooltip: true, title: 'XC P2P', formatter: time_formatter, highlight: true },
                     { width: 45, sum: true, source: 'solo', title: 'Solo', formatter: time_formatter, highlight: false },
                     { width: 45, sum: true, source: 'dual.received', title: 'Dual Rec', formatter: time_formatter, highlight: true },
                     { width: 45, sum: true, source: 'pic', title: 'PIC', formatter: time_formatter, highlight: false }
                 ]
             },
-            { cols: [{ width: 45, sum: true, source: 'total', title: 'Total Time', highlight: true }] }
+            { cols: [{ width: 45, sum: true, source: 'total', title: 'Total Time', formatter: time_formatter, highlight: true }] }
         ]
 
         const secondary_col = [
@@ -177,11 +186,11 @@ define((require) => {
             {
                 title: 'Route of Flight', cols: [
                     { width: 45, sum: false, source: 'route.from', title: 'From', highlight: false },
-                    { width: 45, sum: false, source: 'route.via', tooltip: true, title: 'Via', highlight: false },
+                    { width: 45, sum: false, source: 'route.via', tooltip: 'route.via', title: 'Via', highlight: false },
                     { width: 45, sum: false, source: 'route.to', title: 'To', highlight: false }
                 ]
             },
-            { cols: [{ width: 45, sum: true, source: 'total', title: 'Total', highlight: true }] },
+            { cols: [{ width: 45, sum: true, source: 'total', title: 'Total', formatter: time_formatter, highlight: true }] },
             {
                 title: 'Aircraft Category & Class', cols: [
                     { width: 45, sum: true, source: 'class.airplane.single_engine_land', title: 'SEL', formatter: time_formatter, highlight: false },
@@ -216,13 +225,14 @@ define((require) => {
                 title: 'Type of Pilot Experience or Training', cols: [
                     { width: 45, sum: false, source: 'ground_training', title: 'Ground Rec', formatter: time_formatter, highlight: false },
                     { width: 45, sum: true, source: 'dual.received', title: 'Dual Rec', formatter: time_formatter, highlight: true },
-                    { width: 45, sum: true, source: 'cross_country', title: 'XC', formatter: time_formatter, highlight: false },
+                    { width: 45, sum: true, source: 'cross_country.normal', title: 'XC', formatter: time_formatter, highlight: false },
+                    { width: 45, sum: true, source: 'cross_country.point_to_point', tooltip: true, title: 'XC P2P', formatter: time_formatter, highlight: false },
                     { width: 45, sum: true, source: 'night', title: 'Night', formatter: time_formatter, highlight: true },
                     { width: 45, sum: true, source: 'solo', title: 'Solo', formatter: time_formatter, highlight: false },
                     { width: 45, sum: true, source: 'pic', title: 'PIC', formatter: time_formatter, highlight: true },
                     { width: 45, sum: true, source: 'sic', title: 'SIC', formatter: time_formatter, highlight: false },
                     { width: 45, sum: true, source: 'dual.given', title: 'Dual Given', formatter: time_formatter, highlight: true },
-                    { width: 45, sum: true, source: null, title: 'Ground Given', formatter: time_formatter, highlight: false }
+                    { width: 45, sum: false, source: null, title: 'Ground Given', formatter: time_formatter, highlight: false }
                 ]
             },
 
@@ -230,6 +240,7 @@ define((require) => {
         ]
 
         // Set up te styler
+        // styler = new LogbookStyler({ columns: columns, row_border_offset: 1, row_border_spacing: 3, num_rows: 13 });
         styler = new LogbookStyler({ columns: secondary_col, row_border_offset: 3, row_border_spacing: 4, num_rows: 16 });
 
         // Build the style

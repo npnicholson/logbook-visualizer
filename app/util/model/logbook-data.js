@@ -69,7 +69,11 @@ define((require) => {
                         },
 
                         // Times
-                        cross_country: { value: flight.CrossCountry, modifier: {} },
+                        cross_country: {
+                            point_to_point: { value: 0, modifier: {} },
+                            atp: { value: 0, modifier: {} },
+                            normal: { value: flight.CrossCountry, modifier: {} }
+                        },
                         ground_training: { value: flight.GroundTraining, modifier: {} },
                         night: { value: flight.Night, modifier: {} },
                         pic: { value: flight.PIC, modifier: {} },
@@ -230,11 +234,53 @@ define((require) => {
                     if (flight.Person6) ret.passengers.value.push({ name: flight.Person6.split(';')[0], role: flight.Person6.split(';')[1].toLowerCase() });
                     ret.num_passengers.value = ret.passengers.value.length;
 
+                    // Calculate point to point cross country time for this flight
+                    // If this leg was counted as normal cross country, then by definition
+                    // it also counts as point_to_point cross country. We use the total time value 
+                    // because any landing within a flight makes the entire flight count as P2P XC.
+                    if (ret.cross_country.normal.value > 0) {
+                        ret.cross_country.point_to_point.value = ret.total.value;
+                        ret.cross_country.point_to_point.tooltip = 'Normal XC time was provided for this flight';
+                    }
+
+                    // If the from and to values do not match and we did at least one landing OR we 
+                    // gave dual instruction, then this is point_to_point
+                    else if (ret.route.from.value !== ret.route.to.value &&
+                        (ret.operations.landings.all.value > 0 || ret.dual.given.value > 0)) {
+                        ret.cross_country.point_to_point.value = ret.total.value;
+
+                        if (ret.operations.landings.all.value > 0)
+                            ret.cross_country.point_to_point.tooltip = 'To and From differ and at least one landing occured';
+                        else
+                            ret.cross_country.point_to_point.tooltip = 'To and From differ and dual instruction was given (landings don\'t matter)';
+                    }
+
+                    // If the from and to values don't match but there is a valid route with an 
+                    // additional landing OR we gave dual instruction, then this also counts as 
+                    // point_to_point
+                    else if (ret.route.via.value !== null &&
+                        (ret.operations.landings.all.value > 1 || ret.dual.given.value > 0)) {
+                        ret.cross_country.point_to_point.value = ret.total.value;
+
+                        if (ret.operations.landings.all.value > 1)
+                            ret.cross_country.point_to_point.tooltip = 'Flight occured via another airport and at least two landings occured';
+                        else
+                            ret.cross_country.point_to_point.tooltip = 'Flight occured via another airport and dual instruction was given (landings don\'t matter)';
+                    }
+
+                    // build a tooltip for why this flight didn't qualify as a p2p flight
+                    else {
+                        if (ret.route.from.value !== ret.route.to.value)
+                            ret.cross_country.point_to_point.tooltip = 'To and From differ but the required landings were not observed';
+                        else if (ret.route.via.value !== null)
+                            ret.cross_country.point_to_point.tooltip = 'Flight occured via another airport but the required landings were not observed';
+                    }
+
                     // Apply aircraft based information, if one is found
                     let craft = aircraft_table.data.find(aircraft => aircraft.AircraftID == flight.AircraftID);
 
                     // If the aircraft is defined in the list
-                    if (craft) {
+                    if (flight.AircraftID && craft) {
                         // Assign the aircraft values
                         ret.aircraft.category = { value: craft.Category, modifier: {} };
                         ret.aircraft.class = { value: craft.Class, modifier: {} };
@@ -250,40 +296,50 @@ define((require) => {
                         ret.aircraft.engine = { value: craft.EngineType.toLowerCase(), modifier: {} };
                         ret.aircraft.gear = { value: craft.GearType, modifier: {} };
 
-                        // Set the gear times
-                        if (craft.GearType == 'fixed_tailwheel') ret.gear.fixed.tailwheel.value = ret.total.value;
-                        else if (craft.GearType == 'fixed_tricycle') ret.gear.fixed.tricycle.value = ret.total.value;
-                        else if (craft.GearType == 'retractable_tailwheel') ret.gear.retract.tailwheel.value = ret.total.value;
-                        else if (craft.GearType == 'retractable_tricycle') ret.gear.retract.tricycle.value = ret.total.value;
-                        else if (craft.GearType == 'amphibian') ret.gear.amphibian.value = ret.total.value;
-                        else if (craft.GearType == 'floats') ret.gear.floats.value = ret.total.value;
-                        else if (craft.GearType == 'skids') ret.gear.skids.value = ret.total.value;
-                        else if (craft.GearType == 'skis') ret.gear.skis.value = ret.total.value;
-                        else console.error("Unknown Gear Type: " + craft.GearType);
+                        // Count the flight towards simulator time
+                        if (craft.EquipmentType === 'ftd') {
+                            
+                            ret.class.simulator.flight_training_device.value = flight.SimulatedFlight;
+                        } 
+                        
+                        // Count all other time based on the craft information
+                        else {
 
-                        // Set the any gear types 
-                        if (craft.GearType == 'fixed_tailwheel' || craft.GearType == 'fixed_tricycle') ret.gear.fixed.any.value = ret.total.value;
-                        if (craft.GearType == 'retractable_tailwheel' || craft.GearType == 'retractable_tricycle') ret.gear.retract.any.value = ret.total.value;
+                            // Set the gear times
+                            if (craft.GearType == 'fixed_tailwheel') ret.gear.fixed.tailwheel.value = ret.total.value;
+                            else if (craft.GearType == 'fixed_tricycle') ret.gear.fixed.tricycle.value = ret.total.value;
+                            else if (craft.GearType == 'retractable_tailwheel') ret.gear.retract.tailwheel.value = ret.total.value;
+                            else if (craft.GearType == 'retractable_tricycle') ret.gear.retract.tricycle.value = ret.total.value;
+                            else if (craft.GearType == 'amphibian') ret.gear.amphibian.value = ret.total.value;
+                            else if (craft.GearType == 'floats') ret.gear.floats.value = ret.total.value;
+                            else if (craft.GearType == 'skids') ret.gear.skids.value = ret.total.value;
+                            else if (craft.GearType == 'skis') ret.gear.skis.value = ret.total.value;
+                            else console.error("Unknown Gear Type: " + craft.GearType, craft);
 
-                        // Set the aircraft times based on the aircraft class
-                        if (craft.Class == 'airplane_single_engine_land') ret.class.airplane.single_engine_land.value = ret.total.value;
-                        else if (craft.Class == 'airplane_multi_engine_land') ret.class.airplane.multi_engine_land.value = ret.total.value;
-                        else if (craft.Class == 'airplane_single_engine_sea') ret.class.airplane.single_engine_sea.value = ret.total.value;
-                        else if (craft.Class == 'airplane_multi_engine_sea') ret.class.airplane.multi_engine_sea.value = ret.total.value;
-                        else if (craft.Class == 'rotorcraft_helicopter') ret.class.rotorcraft.helicopter.value = ret.total.value;
-                        else if (craft.Class == 'rotorcraft_gyroplane') ret.class.rotorcraft.gyroplane.value = ret.total.value;
-                        else if (craft.Class == 'glider') ret.class.glider.value = ret.total.value;
-                        else if (craft.Class == 'lighter_than_air_airship') ret.class.lighter_than_air.airship.value = ret.total.value;
-                        else if (craft.Class == 'lighter_than_air_balloon') ret.class.lighter_than_air.balloon.value = ret.total.value;
-                        else if (craft.Class == 'powered_lift') ret.class.powered_lift.value = ret.total.value;
-                        else if (craft.Class == 'powered_parachute_land') ret.class.powered_parachute.land.value = ret.total.value;
-                        else if (craft.Class == 'powered_parachute_sea') ret.class.powered_parachute.sea.value = ret.total.value;
-                        else if (craft.Class == 'weight_shift_control_land') ret.class.weight_shift_control.land.value = ret.total.value;
-                        else if (craft.Class == 'weight_shift_control_sea') ret.class.weight_shift_control.sea.value = ret.total.value;
-                        else if (craft.Class == 'full_flight_simulator') ret.class.simulator.full.value = ret.total.value;
-                        else if (craft.Class == 'flight_training_device') ret.class.simulator.flight_training_device.value = ret.total.value;
-                        else if (craft.Class == 'aviation_training_device') ret.class.simulator.aviation_training_device.value = ret.total.value;
-                        else console.error("Unknown Aircraft Class: " + craft.Class);
+                            // Set the any gear types 
+                            if (craft.GearType == 'fixed_tailwheel' || craft.GearType == 'fixed_tricycle') ret.gear.fixed.any.value = ret.total.value;
+                            if (craft.GearType == 'retractable_tailwheel' || craft.GearType == 'retractable_tricycle') ret.gear.retract.any.value = ret.total.value;
+
+                            // Set the aircraft times based on the aircraft class
+                            if (craft.Class == 'airplane_single_engine_land') ret.class.airplane.single_engine_land.value = ret.total.value;
+                            else if (craft.Class == 'airplane_multi_engine_land') ret.class.airplane.multi_engine_land.value = ret.total.value;
+                            else if (craft.Class == 'airplane_single_engine_sea') ret.class.airplane.single_engine_sea.value = ret.total.value;
+                            else if (craft.Class == 'airplane_multi_engine_sea') ret.class.airplane.multi_engine_sea.value = ret.total.value;
+                            else if (craft.Class == 'rotorcraft_helicopter') ret.class.rotorcraft.helicopter.value = ret.total.value;
+                            else if (craft.Class == 'rotorcraft_gyroplane') ret.class.rotorcraft.gyroplane.value = ret.total.value;
+                            else if (craft.Class == 'glider') ret.class.glider.value = ret.total.value;
+                            else if (craft.Class == 'lighter_than_air_airship') ret.class.lighter_than_air.airship.value = ret.total.value;
+                            else if (craft.Class == 'lighter_than_air_balloon') ret.class.lighter_than_air.balloon.value = ret.total.value;
+                            else if (craft.Class == 'powered_lift') ret.class.powered_lift.value = ret.total.value;
+                            else if (craft.Class == 'powered_parachute_land') ret.class.powered_parachute.land.value = ret.total.value;
+                            else if (craft.Class == 'powered_parachute_sea') ret.class.powered_parachute.sea.value = ret.total.value;
+                            else if (craft.Class == 'weight_shift_control_land') ret.class.weight_shift_control.land.value = ret.total.value;
+                            else if (craft.Class == 'weight_shift_control_sea') ret.class.weight_shift_control.sea.value = ret.total.value;
+                            else if (craft.Class == 'full_flight_simulator') ret.class.simulator.full.value = ret.total.value;
+                            // else if (craft.Class == 'flight_training_device') ret.class.simulator.flight_training_device.value = ret.total.value;
+                            else if (craft.Class == 'aviation_training_device') ret.class.simulator.aviation_training_device.value = ret.total.value;
+                            else console.error("Unknown Aircraft Class: " + craft.Class);
+                        }
 
                     }
 
@@ -335,7 +391,11 @@ define((require) => {
                 },
 
                 // Times
-                cross_country: { value: entry.cross_country.value, modifier: {} },
+                cross_country: {
+                    atp: { value: entry.cross_country.atp.value, modifier: {} },
+                    point_to_point: { value: entry.cross_country.point_to_point.value, modifier: {} },
+                    normal: { value: entry.cross_country.normal.value, modifier: {} }
+                },
                 ground_training: { value: entry.ground_training.value, modifier: {} },
                 night: { value: entry.night.value, modifier: {} },
                 pic: { value: entry.pic.value, modifier: {} },
@@ -463,7 +523,11 @@ define((require) => {
                 this.running_total[idx] = {
 
                     // Times
-                    cross_country: { value: roundToTwo(entry.cross_country.value + last.cross_country.value), modifier: {} },
+                    cross_country: {
+                        atp: { value: roundToTwo(entry.cross_country.atp.value + last.cross_country.atp.value), modifier: {} },
+                        point_to_point: { value: roundToTwo(entry.cross_country.point_to_point.value + last.cross_country.point_to_point.value), modifier: {} },
+                        normal: { value: roundToTwo(entry.cross_country.normal.value + last.cross_country.normal.value), modifier: {} },
+                    },
                     ground_training: { value: roundToTwo(entry.ground_training.value + last.ground_training.value), modifier: {} },
                     night: { value: roundToTwo(entry.night.value + last.night.value), modifier: {} },
                     pic: { value: roundToTwo(entry.pic.value + last.pic.value), modifier: {} },
@@ -639,7 +703,6 @@ define((require) => {
             // Define a moving reference to internal objects within obj
             let schema = this.entries[row];
 
-            // console.log("set", row, schema, address, value);
             // Split the address by '.'
             let addressList = address.split('.');
 
@@ -711,7 +774,6 @@ define((require) => {
         // Get the sum of the given address. If an ending row is provided,
         // then sum to that row
         sum(address, end = 0, start = -1) {
-
 
             let end_total = this.get_total(address, end);
 
