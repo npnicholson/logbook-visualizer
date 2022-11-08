@@ -42,6 +42,10 @@
   background: #f8e681 !important;
 }
 
+.handsontable .derived {
+  background: #e8ffd4 !important;
+}
+
 /** Bootstrap Tooltip Style **/
 
 /* Change the final opacity to 1 */

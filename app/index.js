@@ -122,14 +122,6 @@ define((require) => {
             return output;
         }
 
-        // Reach in and grab the internal tooltip param of the given value
-        const ptp_cross_country_tooltip = (row_data) => {
-            if (row_data == null) return null;
-            console.log('r', row_data);
-            console.log(row_data.cross_country.point_to_point.tooltip);
-            return row_data.cross_country.point_to_point.tooltip;
-        }
-
         const columns = [
             { cols: [{ width: 65, sum: false, source: 'date.short', title: 'Date', highlight: false }] },
             { cols: [{ width: 55, sum: false, source: 'aircraft.type', title: 'Aircraft Type', highlight: false }] },
@@ -137,13 +129,13 @@ define((require) => {
             {
                 title: 'Route of Flight', cols: [
                     { width: 45, sum: false, source: 'route.from', title: 'From', highlight: false },
-                    { width: 45, sum: false, source: 'route.via', tooltip: 'route.via', title: 'Via', highlight: false },
+                    { width: 45, sum: false, source: 'route.via', tooltip: true, title: 'Via', highlight: false },
                     { width: 45, sum: false, source: 'route.to', title: 'To', highlight: false }
                 ]
             },
             { cols: [{ width: 25, sum: false, source: 'operations.approaches', tooltip: array_tooltip, title: '# AP', formatter: counter_formatter, highlight: true }] },
             { cols: [{ width: 25, sum: false, source: 'operations.holds', title: '# H', formatter: counter_formatter, highlight: true }] },
-            { cols: [{ width: 240, sum: false, source: 'comments', tooltip: 'comments', title: 'Remarks and Endorsements', highlight: false, text: true }] },
+            { cols: [{ width: 240, sum: false, source: 'comments', tooltip: true, title: 'Remarks and Endorsements', highlight: false, text: true }] },
             { cols: [{ width: 35, sum: true, source: 'operations.takeoffs.all', title: '# TO', formatter: counter_formatter, highlight: true }] },
             { cols: [{ width: 35, sum: true, source: 'operations.landings.all', title: '# LD', formatter: counter_formatter, highlight: true }] },
             {
@@ -170,7 +162,7 @@ define((require) => {
             {
                 title: 'Conditions of Flight', cols: [
                     { width: 45, sum: true, source: 'cross_country.normal', title: 'XC', formatter: time_formatter, highlight: true },
-                    { width: 45, sum: true, source: 'cross_country.point_to_point', tooltip: true, title: 'XC P2P', formatter: time_formatter, highlight: true },
+                    { width: 45, sum: true, source: 'cross_country.point_to_point', title: 'XC P2P', formatter: time_formatter, highlight: true },
                     { width: 45, sum: true, source: 'solo', title: 'Solo', formatter: time_formatter, highlight: false },
                     { width: 45, sum: true, source: 'dual.received', title: 'Dual Rec', formatter: time_formatter, highlight: true },
                     { width: 45, sum: true, source: 'pic', title: 'PIC', formatter: time_formatter, highlight: false }
@@ -186,7 +178,7 @@ define((require) => {
             {
                 title: 'Route of Flight', cols: [
                     { width: 45, sum: false, source: 'route.from', title: 'From', highlight: false },
-                    { width: 45, sum: false, source: 'route.via', tooltip: 'route.via', title: 'Via', highlight: false },
+                    { width: 45, sum: false, source: 'route.via', tooltip: true, title: 'Via', highlight: false },
                     { width: 45, sum: false, source: 'route.to', title: 'To', highlight: false }
                 ]
             },
@@ -226,7 +218,7 @@ define((require) => {
                     { width: 45, sum: false, source: 'ground_training', title: 'Ground Rec', formatter: time_formatter, highlight: false },
                     { width: 45, sum: true, source: 'dual.received', title: 'Dual Rec', formatter: time_formatter, highlight: true },
                     { width: 45, sum: true, source: 'cross_country.normal', title: 'XC', formatter: time_formatter, highlight: false },
-                    { width: 45, sum: true, source: 'cross_country.point_to_point', tooltip: true, title: 'XC P2P', formatter: time_formatter, highlight: false },
+                    { width: 45, sum: true, source: 'cross_country.point_to_point', title: 'XC P2P', formatter: time_formatter, highlight: false },
                     { width: 45, sum: true, source: 'night', title: 'Night', formatter: time_formatter, highlight: true },
                     { width: 45, sum: true, source: 'solo', title: 'Solo', formatter: time_formatter, highlight: false },
                     { width: 45, sum: true, source: 'pic', title: 'PIC', formatter: time_formatter, highlight: true },
@@ -329,13 +321,11 @@ define((require) => {
 
                 // Select next
                 else if (key_code == "Comma") {
-                    do_update = true;
                     manager.select_up();
                 }
 
                 // Select Prev
                 else if (key_code == "Period") {
-                    do_update = true;
                     manager.select_down();
                 }
 
@@ -348,8 +338,7 @@ define((require) => {
                 }
 
                 else if (key_code == "Escape") {
-                    do_update = true;
-                    manager.clear_selection();
+                    manager.clear_selection(true);
                 }
 
                 else if (key_code == "Enter") {

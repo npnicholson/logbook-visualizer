@@ -36,6 +36,14 @@ define((require) => {
                 row: null,
                 col: null
             }
+
+            // Id used to denote the TimoutID associated with the long render process. This render
+            // process occurs sometime after the user stops interacting with the interface in order
+            // to facilitate a more responsive user experiance
+            this.styleRenderTimeoutId = undefined;
+
+            // Whether or not modifier styles are currently rendered
+            this.modiferStylesRendered = false;
         }
 
         init() {
@@ -76,6 +84,8 @@ define((require) => {
             this.hot.addHook('afterChange', (change, source) => {
                 // Only listen for edit undo, edit redo, and basic edits
                 if (source == 'UndoRedo.undo' || source == 'UndoRedo.redo' || source == 'edit') {
+
+                    console.log('edit');
 
                     // Only look at edits with a single change. This limits our search to only those edits
                     // which the user made. Automated edits can edit hundreds of cells at once
@@ -145,17 +155,27 @@ define((require) => {
             return this.cursor;
         }
 
+        // Clear the row selection
         clear_selection(render = false) {
+
+            // If there is actually a row selected, then proceed
             if (this.selected.row !== null) {
 
+                // Go through each column and see what the selected row's class was last. Set the
+                // row back to its original class 
                 for (var i = 0; i < this.hot.countCols(); i++) {
                     let className = this.lastRowClass[i];
                     this.hot.setCellMeta(this.selected.row, i, 'className', className);
                 }
+
+                // Clear state vars for the selected row and column
                 this.selected.row = null;
                 this.selected.col = null;
+
+                // Clear the stored last row class information
                 this.lastRowClass = [];
 
+                // Render if needed
                 if (render) this.hot.render();
             }
         }
@@ -181,7 +201,7 @@ define((require) => {
                     this.hot.setCellMeta(r, i, 'className', className + 'select');
                 }
 
-                // Render the table if needded
+                // Render the table if needed
                 if (render) this.hot.render();
 
             }
@@ -199,6 +219,10 @@ define((require) => {
         }
 
         render(first_render = false) {
+            console.time('Render');
+
+            if (this.modiferStylesRendered) this.remove_modifier_styles();
+
             // Limit the cursor
             this.cursor = this.fence_cursor(this.cursor);
 
@@ -206,13 +230,10 @@ define((require) => {
             this.store_cursor();
 
             // Remove all tooltips within the container
-            // $('body').tooltip('dispose');
             $('body').tooltip('destroy');
-        
 
             // Prepare a list of changes
             let changes = []
-            let style_changes = [];
             // Itterate through the list of sources for this logbook
             for (let col_name of this.styler.source_idx) {
                 // If the column is not defined, then continue
@@ -221,7 +242,7 @@ define((require) => {
                 // Get the handsontable column index for the given column name.
                 // Also get whether or not it is summable, and the formatter to use
                 // for the column
-                let { col, summable, tooltip, formatter } = this.styler.get_col(col_name);
+                const { col, summable, tooltip, formatter } = this.styler.get_col(col_name);
 
                 // Go through each row in this column
                 for (let page_row = 0; page_row < this.styler.num_rows; page_row++) {
@@ -229,75 +250,28 @@ define((require) => {
                     // Get the data index to display on this row of the logbook page. The 
                     // data entries are displayed in reverse order (newer events at the end),
                     // and we adjust the value based on the cursor
-                    let d_row = this.row_view_to_data(page_row);
+                    const d_row = this.row_view_to_data(page_row);
 
                     // Get the data for this row and column name from the model
-                    let data = null, modifier = {};
+                    let data = null;
                     // Issolated scope to prevent data_obj from precisting
                     {
-                        let data_obj = this.model.get(d_row, col_name)
+                        const data_obj = this.model.get(d_row, col_name)
                         if (data_obj !== null && data_obj !== undefined) {
                             data = formatter(data_obj.value);
-                            modifier = data_obj.modifier;
-                        }
-                    }
-
-                    if ('edited' in modifier) {
-                        // mod_text = "*";
-                        style_changes.push([this.styler.row_view_to_hot(page_row), col, 'edited']);
-                    }
-
-                    // If this column has a tooltip, then add a tooltop to this cell2
-                    if (tooltip) {
-                        // Get the container for this cell
-                        let cell = this.hot.getCell(this.styler.row_view_to_hot(page_row), col);
-
-                        // By default let's assume the tooltip should be blank
-                        let tooltip_data = '';
-
-                        // If the tooltip is a string, then it is refering to another value from the entry to display
-                        if (typeof tooltip == 'string') {
-                            // Get the value from the entry to display
-                            tooltip_data = this.model.get_value(d_row, tooltip);
-                            // If the tooltip is an empty list, then set it to null instead
-                            if (Array.isArray(tooltip_data) && tooltip_data.length == 0) tooltip_data = null;
-                        } 
-                        
-                        // If the tooltip is a function, then call the function to determine the tooltip
-                        else if (typeof tooltip == 'function') {
-                            // Run the tooltip with the entire entry's worth of data
-                            tooltip_data = tooltip(this.model.get(d_row));
-                        } 
-                        
-                        // If the tooltip is a simple boolean true, then display any tooltip within the 
-                        // data entry (usially for explaining how or why a value was calculated a certain way)
-                        else if (typeof tooltip == 'boolean') {
-                            const d = this.model.get(d_row, col_name);
-                            if (d) tooltip_data = d.tooltip
-                        }
-
-                        // If there is actually data to display in the tooltip, then do so
-                        if (tooltip_data) {
-                            // If this is the first time rendering, then generate a new tooltop with all of the correct settings
-                            if (first_render) $(cell).tooltip({ trigger: 'hover', html: true, title: tooltip_data, placement: "auto top", container: 'body' });
-
-                            // If this is not the first render, then simply update the tooltip that already exists
-                            else $(cell).tooltip('hide').attr('data-original-title', tooltip_data).tooltip('enable');
-                        }
-
-                        // If there is not valid data, then disable it
-                        else {
-                            // If this is the first time rendering, then generate a new tooltop with all of the correct settings, and disable it
-                            if (first_render) $(cell).tooltip({ trigger: 'hover', html: true, title: null, placement: "auto top", container: 'body' }).tooltip('disable');
-
-                            // If this is not the first render, then simply disable the tooltip that already exists
-                            else $(cell).tooltip('disable');
                         }
                     }
 
                     // Push the change to the changes list
                     // if (mod_text) changes.push([this.styler.row_view_to_hot(page_row), col, data + mod_text]);
                     changes.push([this.styler.row_view_to_hot(page_row), col, data]);
+
+                    // If this is the first render then create the empty tooltip for this cell and 
+                    // disable it
+                    if (first_render) {
+                        const cell = this.hot.getCell(this.styler.row_view_to_hot(page_row), col);
+                        $(cell).tooltip({ trigger: 'hover', html: true, title: null, placement: "auto top", container: 'body' }).tooltip('disable');
+                    }
                 }
 
                 // If this column is summable, then produce the sum
@@ -331,10 +305,146 @@ define((require) => {
             // Apply the changes
             this.hot.setDataAtCell(changes);
 
-            // Apply the style changes
-            // this.styler.apply_style(this.hot);
-            // this.styler.apply_style_changes(this.hot, style_changes);
+            // Stage a modifier style render
+            this.stage_modifier_style_render();
 
+            console.timeEnd('Render');
+        }
+
+        // Render styles for specific cells with modifiers. This, for example, allows cells to show
+        // whether or not they have changed
+        render_modifier_styles(remove = false) {
+
+            const styleList = ['edited', 'derived'];
+
+            // List of style changes on screen to be made
+            let style_changes = [];
+
+            // Itterate through the list of sources for this logbook
+            for (let col_name of this.styler.source_idx) {
+                // If the column is not defined, then continue
+                if (!col_name) continue;
+
+                // Get the handsontable column index for the given column name.
+                // Also get whether or not it is summable, and the formatter to use
+                // for the column
+                const { col, summable, tooltip, formatter } = this.styler.get_col(col_name);
+
+                // Go through each row in this column
+                for (let page_row = 0; page_row < this.styler.num_rows; page_row++) {
+                    // Get the handsontable row index as well
+                    const h_row = this.styler.row_view_to_hot(page_row);
+
+                    // Get the HTML cell container for this cell
+                    const cell = this.hot.getCell(this.styler.row_view_to_hot(page_row), col);
+
+                    // If we are removing all modifer styles from the table, then do that here
+                    if (remove) {
+                        // Get the current style and className for this cell
+                        const cur_style = this.hot.getCellMeta(h_row, col);
+                        let className = cur_style.className
+                        const origClassName = className;
+
+                        // If the classname includes one of the style modifiers, then remove that style
+                        for (const style of styleList)
+                            className = className.replaceAll(style, '');
+
+                        // If the className was changed at all, apply it
+                        if (className !== origClassName) style_changes.push([h_row, col, className]);
+                        
+                        // Disable the tooltip for this cell
+                        $(cell).tooltip('disable');
+
+                    } else {
+
+                        // Don't add any styles to this row if it is selected. Otherwise we can
+                        // write over the selection row with our style
+                        if (this.selected.row === h_row) continue;
+
+                        // Get the data index to display on this row of the logbook page. The 
+                        // data entries are displayed in reverse order (newer events at the end),
+                        // and we adjust the value based on the cursor
+                        const d_row = this.row_view_to_data(page_row);
+
+                        // Modifier placeholder
+                        let modifier = {};
+                        // Get the data for this row and column name from the model
+                        let data = null;
+                        // Issolated scope to prevent data_obj from precisting
+                        {
+                            const data_obj = this.model.get(d_row, col_name)
+                            if (data_obj !== null && data_obj !== undefined) {
+                                modifier = data_obj.modifier;
+                                data = formatter(data_obj.value);
+                            }
+                        }
+
+                        // Gather a list of all of the styles that should be applied to this cell
+                        let className = '';
+                        for (const style of styleList)
+                            if ('style' in modifier && style in modifier.style) className += style + ' ';
+
+                        // If any styles were added, then apply the changes
+                        if (className !== '') style_changes.push([h_row, col, className]);
+
+                        // Handle the tooltip for this cell
+                        // By default let's assume the tooltip should be blank
+                        let tooltip_data = '';
+
+                        // If a tooltip was set manualy, then determine how to display it 
+                        if (tooltip) {
+
+                            // If the tooltip is a string, then it is refering to another value from the entry to display
+                            if (typeof tooltip == 'string') {
+                                // Get the value from the entry to display
+                                tooltip_data = this.model.get_value(d_row, tooltip);
+                                // If the tooltip is an empty list, then set it to null instead
+                                if (Array.isArray(tooltip_data) && tooltip_data.length == 0) tooltip_data = null;
+                            }
+
+                            // If the tooltip is a function, then call the function to determine the tooltip
+                            else if (typeof tooltip == 'function') {
+                                // Run the tooltip with the entire entry's worth of data
+                                tooltip_data = tooltip(this.model.get(d_row));
+                            }
+
+                            // If the tooltip is a simple boolean true, then display the cell data 
+                            else if (typeof tooltip == 'boolean') tooltip_data = data
+                        }
+
+                        // If the tooltip was not set manually, then check to see if the cell has
+                        // a tooltip entry in its modifier data. If so, display that instead
+                        else {
+                            const d = this.model.get(d_row, col_name);
+                            if (d && d.modifier.tooltip) tooltip_data = d.modifier.tooltip
+                        }
+
+                        // If there is actually data to display in the tooltip, then do so
+                        if (tooltip_data !== '')
+                            $(cell).tooltip('hide').attr('data-original-title', tooltip_data).tooltip('enable');
+
+                        // If there is not valid data, then disable it
+                        else $(cell).tooltip('disable');
+                    }
+                }
+            }
+
+            // this.styler.apply_style(this.hot);
+            this.styler.apply_style_changes(this.hot, style_changes);
+
+            if (remove) this.modiferStylesRendered = false;
+            else this.modiferStylesRendered = true;
+        }
+
+        remove_modifier_styles() {
+            return this.render_modifier_styles(true);
+        }
+
+        stage_modifier_style_render() {
+            clearTimeout(this.styleRenderTimeoutId);
+
+            const _this = this;
+            this.styleRenderTimeoutId = setTimeout(function () { _this.render_modifier_styles(); }, 500);
         }
 
         // Adjust the cursor so that it is a valid value

@@ -58,161 +58,161 @@ define((require) => {
 
                     let ret = {
                         aircraft: {
-                            id: { value: flight.AircraftID, modifier: {} }
+                            id: { value: flight.AircraftID, modifier: { style : { } } }
                         },
 
                         // Date is in date object form
                         date: {
-                            object: { value: new Date(date), modifier: {} },
-                            short: { value: dateFns.format(date, "MM/DD/YY"), modifier: {} },
-                            plain: { value: date, modifier: {} },
+                            object: { value: new Date(date), modifier: { style : { } } },
+                            short: { value: dateFns.format(date, "MM/DD/YY"), modifier: { style : { } } },
+                            plain: { value: date, modifier: { style : { } } },
                         },
 
                         // Times
                         cross_country: {
-                            point_to_point: { value: 0, modifier: {} },
-                            atp: { value: 0, modifier: {} },
-                            normal: { value: flight.CrossCountry, modifier: {} }
+                            point_to_point: { value: 0, modifier: { style : { } } },
+                            atp: { value: 0, modifier: { style : { } } },
+                            normal: { value: flight.CrossCountry, modifier: { style : { } } }
                         },
-                        ground_training: { value: flight.GroundTraining, modifier: {} },
-                        night: { value: flight.Night, modifier: {} },
-                        pic: { value: flight.PIC, modifier: {} },
-                        sic: { value: flight.SIC, modifier: {} },
-                        solo: { value: flight.Solo, modifier: {} },
-                        total: { value: flight.TotalTime, modifier: {} },
+                        ground_training: { value: flight.GroundTraining, modifier: { style : { } } },
+                        night: { value: flight.Night, modifier: { style : { } } },
+                        pic: { value: flight.PIC, modifier: { style : { } } },
+                        sic: { value: flight.SIC, modifier: { style : { } } },
+                        solo: { value: flight.Solo, modifier: { style : { } } },
+                        total: { value: flight.TotalTime, modifier: { style : { } } },
 
                         // Set as 0 for now, will revisit later on
                         class: {
                             airplane: {
-                                single_engine_land: { value: 0, modifier: {} },
-                                multi_engine_land: { value: 0, modifier: {} },
-                                single_engine_sea: { value: 0, modifier: {} },
-                                multi_engine_sea: { value: 0, modifier: {} }
+                                single_engine_land: { value: 0, modifier: { style : { } } },
+                                multi_engine_land: { value: 0, modifier: { style : { } } },
+                                single_engine_sea: { value: 0, modifier: { style : { } } },
+                                multi_engine_sea: { value: 0, modifier: { style : { } } }
                             },
                             rotorcraft: {
-                                gyroplane: { value: 0, modifier: {} },
-                                helicopter: { value: 0, modifier: {} }
+                                gyroplane: { value: 0, modifier: { style : { } } },
+                                helicopter: { value: 0, modifier: { style : { } } }
                             },
-                            glider: { value: 0, modifier: {} },
+                            glider: { value: 0, modifier: { style : { } } },
                             lighter_than_air: {
-                                airship: { value: 0, modifier: {} },
-                                balloon: { value: 0, modifier: {} }
+                                airship: { value: 0, modifier: { style : { } } },
+                                balloon: { value: 0, modifier: { style : { } } }
                             },
-                            powered_lift: { value: 0, modifier: {} },
+                            powered_lift: { value: 0, modifier: { style : { } } },
                             powered_parachute: {
-                                land: { value: 0, modifier: {} },
-                                sea: { value: 0, modifier: {} },
+                                land: { value: 0, modifier: { style : { } } },
+                                sea: { value: 0, modifier: { style : { } } },
                             },
                             weight_shift_control: {
-                                land: { value: 0, modifier: {} },
-                                sea: { value: 0, modifier: {} }
+                                land: { value: 0, modifier: { style : { } } },
+                                sea: { value: 0, modifier: { style : { } } }
                             },
                             simulator: {
-                                full: { value: 0, modifier: {} },
-                                flight_training_device: { value: 0, modifier: {} },
-                                aviation_training_device: { value: 0, modifier: {} }
+                                full: { value: 0, modifier: { style : { } } },
+                                flight_training_device: { value: 0, modifier: { style : { } } },
+                                aviation_training_device: { value: 0, modifier: { style : { } } }
                             }
                         },
 
                         // Set as 0 for now, will revisit later on
                         gear: {
                             fixed: {
-                                tailwheel: { value: 0, modifier: {} },
-                                tricycle: { value: 0, modifier: {} },
-                                any: { value: 0, modifier: {} }
+                                tailwheel: { value: 0, modifier: { style : { } } },
+                                tricycle: { value: 0, modifier: { style : { } } },
+                                any: { value: 0, modifier: { style : { } } }
                             },
                             retract: {
-                                tailwheel: { value: 0, modifier: {} },
-                                tricycle: { value: 0, modifier: {} },
-                                any: { value: 0, modifier: {} },
+                                tailwheel: { value: 0, modifier: { style : { } } },
+                                tricycle: { value: 0, modifier: { style : { } } },
+                                any: { value: 0, modifier: { style : { } } },
                             },
-                            amphibian: { value: 0, modifier: {} },
-                            floats: { value: 0, modifier: {} },
-                            skids: { value: 0, modifier: {} },
-                            skis: { value: 0, modifier: {} },
+                            amphibian: { value: 0, modifier: { style : { } } },
+                            floats: { value: 0, modifier: { style : { } } },
+                            skids: { value: 0, modifier: { style : { } } },
+                            skis: { value: 0, modifier: { style : { } } },
                         },
 
                         // Instrument flight
                         instrument: {
-                            actual: { value: flight.ActualInstrument, modifier: {} },
-                            simulated: { value: flight.SimulatedInstrument, modifier: {} },
+                            actual: { value: flight.ActualInstrument, modifier: { style : { } } },
+                            simulated: { value: flight.SimulatedInstrument, modifier: { style : { } } },
                         },
 
                         // Dual flight
                         dual: {
-                            given: { value: flight.DualGiven, modifier: {} },
-                            received: { value: flight.DualReceived, modifier: {} },
+                            given: { value: flight.DualGiven, modifier: { style : { } } },
+                            received: { value: flight.DualReceived, modifier: { style : { } } },
                         },
 
                         // In/out/on/off times
                         time: {
-                            in: { value: flight.TimeIn, modifier: {} },
-                            out: { value: flight.TimeOut, modifier: {} },
-                            on: { value: flight.TimeOn, modifier: {} },
-                            off: { value: flight.TimeOff, modifier: {} },
+                            in: { value: flight.TimeIn, modifier: { style : { } } },
+                            out: { value: flight.TimeOut, modifier: { style : { } } },
+                            on: { value: flight.TimeOn, modifier: { style : { } } },
+                            off: { value: flight.TimeOff, modifier: { style : { } } },
                         },
 
                         // Duty Times
                         duty: {
-                            on: { value: flight.OnDuty, modifier: {} },
-                            off: { value: flight.OffDuty, modifier: {} },
+                            on: { value: flight.OnDuty, modifier: { style : { } } },
+                            off: { value: flight.OffDuty, modifier: { style : { } } },
                         },
 
                         // Empty passenger list
-                        passengers: { value: [], modifier: {} },
-                        num_passengers: { value: 0, modifier: {} },
+                        passengers: { value: [], modifier: { style : { } } },
+                        num_passengers: { value: 0, modifier: { style : { } } },
 
-                        comments: { value: flight.PilotComments, modifier: {} },
+                        comments: { value: flight.PilotComments, modifier: { style : { } } },
 
                         // Hobbs start and end 
                         hobbs: {
-                            start: { value: flight.HobbsStart, modifier: {} },
-                            end: { value: flight.HobbsEnd, modifier: {} },
+                            start: { value: flight.HobbsStart, modifier: { style : { } } },
+                            end: { value: flight.HobbsEnd, modifier: { style : { } } },
                         },
 
                         // Tach start and end
                         tach: {
-                            start: { value: flight.TachStart, modifier: {} },
-                            end: { value: flight.TachEnd, modifier: {} },
+                            start: { value: flight.TachStart, modifier: { style : { } } },
+                            end: { value: flight.TachEnd, modifier: { style : { } } },
                         },
 
                         // Route
                         route: {
-                            from: { value: flight.From, modifier: {} },
-                            via: { value: flight.Route, modifier: {} },
-                            to: { value: flight.To, modifier: {} },
-                            distance: { value: flight.Distance, modifier: {} },
+                            from: { value: flight.From, modifier: { style : { } } },
+                            via: { value: flight.Route, modifier: { style : { } } },
+                            to: { value: flight.To, modifier: { style : { } } },
+                            distance: { value: flight.Distance, modifier: { style : { } } },
                         },
 
                         // Instructor information
                         instructor: {
-                            name: { value: flight.InstructorName, modifier: {} },
-                            comments: { value: flight.InstructorComments, modifier: {} },
+                            name: { value: flight.InstructorName, modifier: { style : { } } },
+                            comments: { value: flight.InstructorComments, modifier: { style : { } } },
                         },
 
                         // Operations
                         operations: {
                             landings: {
-                                all: { value: flight.AllLandings, modifier: {} },
+                                all: { value: flight.AllLandings, modifier: { style : { } } },
                                 full_stop: {
-                                    day: { value: flight.DayLandingsFullStop, modifier: {} },
-                                    night: { value: flight.NightLandingsFullStop, modifier: {} },
+                                    day: { value: flight.DayLandingsFullStop, modifier: { style : { } } },
+                                    night: { value: flight.NightLandingsFullStop, modifier: { style : { } } },
                                 }
                             },
                             takeoffs: {
-                                day: { value: flight.DayTakeoffs, modifier: {} },
-                                night: { value: flight.NightTakeoffs, modifier: {} },
-                                all: { value: flight.DayTakeoffs + flight.NightTakeoffs, modifier: {} },
+                                day: { value: flight.DayTakeoffs, modifier: { style : { } } },
+                                night: { value: flight.NightTakeoffs, modifier: { style : { } } },
+                                all: { value: flight.DayTakeoffs + flight.NightTakeoffs, modifier: { style : { } } },
                             },
                             // Empty approaches list to be filled later
-                            approaches_list: { value: [], modifier: {} },
-                            approaches: { value: 0, modifier: {} },
-                            holds: { value: flight.Holds, modifier: {} },
+                            approaches_list: { value: [], modifier: { style : { } } },
+                            approaches: { value: 0, modifier: { style : { } } },
+                            holds: { value: flight.Holds, modifier: { style : { } } },
                         },
                         classifications: {
-                            is_checkride: { value: flight.Checkride, modifier: {} },
-                            is_flight_review: { value: flight.FlightReview, modifier: {} },
-                            is_instrument_proficiency_check: { value: flight.IPC, modifier: {} },
+                            is_checkride: { value: flight.Checkride, modifier: { style : { } } },
+                            is_flight_review: { value: flight.FlightReview, modifier: { style : { } } },
+                            is_instrument_proficiency_check: { value: flight.IPC, modifier: { style : { } } },
                         }
                     };
 
@@ -240,7 +240,8 @@ define((require) => {
                     // because any landing within a flight makes the entire flight count as P2P XC.
                     if (ret.cross_country.normal.value > 0) {
                         ret.cross_country.point_to_point.value = ret.total.value;
-                        ret.cross_country.point_to_point.tooltip = 'Normal XC time was provided for this flight';
+                        ret.cross_country.point_to_point.modifier.tooltip = 'Normal XC time was provided for this flight';
+                        ret.cross_country.point_to_point.modifier.style.derived = true;
                     }
 
                     // If the from and to values do not match and we did at least one landing OR we 
@@ -248,11 +249,12 @@ define((require) => {
                     else if (ret.route.from.value !== ret.route.to.value &&
                         (ret.operations.landings.all.value > 0 || ret.dual.given.value > 0)) {
                         ret.cross_country.point_to_point.value = ret.total.value;
+                        ret.cross_country.point_to_point.modifier.style.derived = true;
 
                         if (ret.operations.landings.all.value > 0)
-                            ret.cross_country.point_to_point.tooltip = 'To and From differ and at least one landing occured';
+                            ret.cross_country.point_to_point.modifier.tooltip = 'To and From differ and at least one landing occured';
                         else
-                            ret.cross_country.point_to_point.tooltip = 'To and From differ and dual instruction was given (landings don\'t matter)';
+                            ret.cross_country.point_to_point.modifier.tooltip = 'To and From differ and dual instruction was given (landings don\'t matter)';
                     }
 
                     // If the from and to values don't match but there is a valid route with an 
@@ -261,19 +263,20 @@ define((require) => {
                     else if (ret.route.via.value !== null &&
                         (ret.operations.landings.all.value > 1 || ret.dual.given.value > 0)) {
                         ret.cross_country.point_to_point.value = ret.total.value;
+                        ret.cross_country.point_to_point.modifier.style.derived = true;
 
                         if (ret.operations.landings.all.value > 1)
-                            ret.cross_country.point_to_point.tooltip = 'Flight occured via another airport and at least two landings occured';
+                            ret.cross_country.point_to_point.modifier.tooltip = 'Flight occured via another airport and at least two landings occured';
                         else
-                            ret.cross_country.point_to_point.tooltip = 'Flight occured via another airport and dual instruction was given (landings don\'t matter)';
+                            ret.cross_country.point_to_point.modifier.tooltip = 'Flight occured via another airport and dual instruction was given (landings don\'t matter)';
                     }
 
                     // build a tooltip for why this flight didn't qualify as a p2p flight
                     else {
                         if (ret.route.from.value !== ret.route.to.value)
-                            ret.cross_country.point_to_point.tooltip = 'To and From differ but the required landings were not observed';
+                            ret.cross_country.point_to_point.modifier.tooltip = 'To and From differ but the required landings were not observed';
                         else if (ret.route.via.value !== null)
-                            ret.cross_country.point_to_point.tooltip = 'Flight occured via another airport but the required landings were not observed';
+                            ret.cross_country.point_to_point.modifier.tooltip = 'Flight occured via another airport but the required landings were not observed';
                     }
 
                     // Apply aircraft based information, if one is found
@@ -282,28 +285,27 @@ define((require) => {
                     // If the aircraft is defined in the list
                     if (flight.AircraftID && craft) {
                         // Assign the aircraft values
-                        ret.aircraft.category = { value: craft.Category, modifier: {} };
-                        ret.aircraft.class = { value: craft.Class, modifier: {} };
-                        ret.aircraft.is_complex = { value: craft.Complex, modifier: {} };
-                        ret.aircraft.is_high_performance = { value: craft.HighPerformance, modifier: {} };
-                        ret.aircraft.is_pressurized = { value: craft.Pressurized, modifier: {} };
-                        ret.aircraft.type = { value: craft.TypeCode, modifier: {} };
-                        ret.aircraft.year = { value: craft.Year, modifier: {} };
-                        ret.aircraft.make = { value: craft.Make, modifier: {} };
-                        ret.aircraft.model = { value: craft.Model, modifier: {} };
+                        ret.aircraft.category = { value: craft.Category, modifier: { style : { } } };
+                        ret.aircraft.class = { value: craft.Class, modifier: { style : { } } };
+                        ret.aircraft.is_complex = { value: craft.Complex, modifier: { style : { } } };
+                        ret.aircraft.is_high_performance = { value: craft.HighPerformance, modifier: { style : { } } };
+                        ret.aircraft.is_pressurized = { value: craft.Pressurized, modifier: { style : { } } };
+                        ret.aircraft.type = { value: craft.TypeCode, modifier: { style : { } } };
+                        ret.aircraft.year = { value: craft.Year, modifier: { style : { } } };
+                        ret.aircraft.make = { value: craft.Make, modifier: { style : { } } };
+                        ret.aircraft.model = { value: craft.Model, modifier: { style : { } } };
 
                         // Convert the engine type to lower case
-                        ret.aircraft.engine = { value: craft.EngineType.toLowerCase(), modifier: {} };
-                        ret.aircraft.gear = { value: craft.GearType, modifier: {} };
+                        ret.aircraft.engine = { value: craft.EngineType !== null ? craft.EngineType.toLowerCase() : 'Undefined', modifier: { style : { } } };
+                        ret.aircraft.gear = { value: craft.GearType, modifier: { style : { } } };
 
                         // Count the flight towards simulator time
                         if (craft.EquipmentType === 'ftd') {
-                            
                             ret.class.simulator.flight_training_device.value = flight.SimulatedFlight;
-                        } 
+                        }
                         
                         // Count all other time based on the craft information
-                        else {
+                        else if (craft.EquipmentType !== 'ffs') {
 
                             // Set the gear times
                             if (craft.GearType == 'fixed_tailwheel') ret.gear.fixed.tailwheel.value = ret.total.value;
@@ -387,127 +389,127 @@ define((require) => {
             // Write to the oldest running total the contents of the oldest entry
             this.running_total[this.entries.length - 1] = {
                 aircraft: {
-                    id: { value: entry.aircraft.id.value, modifier: {} },
+                    id: { value: entry.aircraft.id.value, modifier: { style : { } } },
                 },
 
                 // Times
                 cross_country: {
-                    atp: { value: entry.cross_country.atp.value, modifier: {} },
-                    point_to_point: { value: entry.cross_country.point_to_point.value, modifier: {} },
-                    normal: { value: entry.cross_country.normal.value, modifier: {} }
+                    atp: { value: entry.cross_country.atp.value, modifier: { style : { } } },
+                    point_to_point: { value: entry.cross_country.point_to_point.value, modifier: { style : { } } },
+                    normal: { value: entry.cross_country.normal.value, modifier: { style : { } } }
                 },
-                ground_training: { value: entry.ground_training.value, modifier: {} },
-                night: { value: entry.night.value, modifier: {} },
-                pic: { value: entry.pic.value, modifier: {} },
-                sic: { value: entry.sic.value, modifier: {} },
-                solo: { value: entry.solo.value, modifier: {} },
-                total: { value: entry.total.value, modifier: {} },
+                ground_training: { value: entry.ground_training.value, modifier: { style : { } } },
+                night: { value: entry.night.value, modifier: { style : { } } },
+                pic: { value: entry.pic.value, modifier: { style : { } } },
+                sic: { value: entry.sic.value, modifier: { style : { } } },
+                solo: { value: entry.solo.value, modifier: { style : { } } },
+                total: { value: entry.total.value, modifier: { style : { } } },
 
                 // Set as 0 for now, will revisit later on
                 class: {
                     airplane: {
-                        single_engine_land: { value: entry.class.airplane.single_engine_land.value, modifier: {} },
-                        multi_engine_land: { value: entry.class.airplane.multi_engine_land.value, modifier: {} },
-                        single_engine_sea: { value: entry.class.airplane.single_engine_sea.value, modifier: {} },
-                        multi_engine_sea: { value: entry.class.airplane.multi_engine_sea.value, modifier: {} },
+                        single_engine_land: { value: entry.class.airplane.single_engine_land.value, modifier: { style : { } } },
+                        multi_engine_land: { value: entry.class.airplane.multi_engine_land.value, modifier: { style : { } } },
+                        single_engine_sea: { value: entry.class.airplane.single_engine_sea.value, modifier: { style : { } } },
+                        multi_engine_sea: { value: entry.class.airplane.multi_engine_sea.value, modifier: { style : { } } },
                     },
                     rotorcraft: {
-                        gyroplane: { value: entry.class.rotorcraft.gyroplane.value, modifier: {} },
-                        helicopter: { value: entry.class.rotorcraft.helicopter.value, modifier: {} },
+                        gyroplane: { value: entry.class.rotorcraft.gyroplane.value, modifier: { style : { } } },
+                        helicopter: { value: entry.class.rotorcraft.helicopter.value, modifier: { style : { } } },
                     },
-                    glider: { value: entry.class.glider.value, modifier: {} },
+                    glider: { value: entry.class.glider.value, modifier: { style : { } } },
                     lighter_than_air: {
-                        airship: { value: entry.class.lighter_than_air.airship.value, modifier: {} },
-                        balloon: { value: entry.class.lighter_than_air.balloon.value, modifier: {} },
+                        airship: { value: entry.class.lighter_than_air.airship.value, modifier: { style : { } } },
+                        balloon: { value: entry.class.lighter_than_air.balloon.value, modifier: { style : { } } },
                     },
-                    powered_lift: { value: entry.class.powered_lift.value, modifier: {} },
+                    powered_lift: { value: entry.class.powered_lift.value, modifier: { style : { } } },
                     powered_parachute: {
-                        land: { value: entry.class.powered_parachute.land.value, modifier: {} },
-                        sea: { value: entry.class.powered_parachute.sea.value, modifier: {} },
+                        land: { value: entry.class.powered_parachute.land.value, modifier: { style : { } } },
+                        sea: { value: entry.class.powered_parachute.sea.value, modifier: { style : { } } },
                     },
                     weight_shift_control: {
-                        land: { value: entry.class.weight_shift_control.land.value, modifier: {} },
-                        sea: { value: entry.class.weight_shift_control.sea.value, modifier: {} },
+                        land: { value: entry.class.weight_shift_control.land.value, modifier: { style : { } } },
+                        sea: { value: entry.class.weight_shift_control.sea.value, modifier: { style : { } } },
                     },
                     simulator: {
-                        full: { value: entry.class.simulator.full.value, modifier: {} },
-                        flight_training_device: { value: entry.class.simulator.flight_training_device.value, modifier: {} },
-                        aviation_training_device: { value: entry.class.simulator.aviation_training_device.value, modifier: {} },
+                        full: { value: entry.class.simulator.full.value, modifier: { style : { } } },
+                        flight_training_device: { value: entry.class.simulator.flight_training_device.value, modifier: { style : { } } },
+                        aviation_training_device: { value: entry.class.simulator.aviation_training_device.value, modifier: { style : { } } },
                     }
                 },
 
                 gear: {
                     fixed: {
-                        tailwheel: { value: entry.gear.fixed.tailwheel.value, modifier: {} },
-                        tricycle: { value: entry.gear.fixed.tricycle.value, modifier: {} },
-                        any: { value: entry.gear.fixed.any.value, modifier: {} },
+                        tailwheel: { value: entry.gear.fixed.tailwheel.value, modifier: { style : { } } },
+                        tricycle: { value: entry.gear.fixed.tricycle.value, modifier: { style : { } } },
+                        any: { value: entry.gear.fixed.any.value, modifier: { style : { } } },
                     },
                     retract: {
-                        tailwheel: { value: entry.gear.retract.tailwheel.value, modifier: {} },
-                        tricycle: { value: entry.gear.retract.tricycle.value, modifier: {} },
-                        any: { value: entry.gear.retract.any.value, modifier: {} },
+                        tailwheel: { value: entry.gear.retract.tailwheel.value, modifier: { style : { } } },
+                        tricycle: { value: entry.gear.retract.tricycle.value, modifier: { style : { } } },
+                        any: { value: entry.gear.retract.any.value, modifier: { style : { } } },
                     },
-                    amphibian: { value: entry.gear.amphibian.value, modifier: {} },
-                    floats: { value: entry.gear.floats.value, modifier: {} },
-                    skids: { value: entry.gear.skids.value, modifier: {} },
-                    skis: { value: entry.gear.skis.value, modifier: {} },
+                    amphibian: { value: entry.gear.amphibian.value, modifier: { style : { } } },
+                    floats: { value: entry.gear.floats.value, modifier: { style : { } } },
+                    skids: { value: entry.gear.skids.value, modifier: { style : { } } },
+                    skis: { value: entry.gear.skis.value, modifier: { style : { } } },
                 },
 
                 // Instrument flight
                 instrument: {
-                    actual: { value: entry.instrument.actual.value, modifier: {} },
-                    simulated: { value: entry.instrument.simulated.value, modifier: {} },
+                    actual: { value: entry.instrument.actual.value, modifier: { style : { } } },
+                    simulated: { value: entry.instrument.simulated.value, modifier: { style : { } } },
                 },
 
                 // Dual flight
                 dual: {
-                    given: { value: entry.dual.given.value, modifier: {} },
-                    received: { value: entry.dual.received.value, modifier: {} },
+                    given: { value: entry.dual.given.value, modifier: { style : { } } },
+                    received: { value: entry.dual.received.value, modifier: { style : { } } },
                 },
 
                 // Duty Times
                 duty: {
-                    on: { value: entry.duty.on.value, modifier: {} },
-                    off: { value: entry.duty.off.value, modifier: {} },
+                    on: { value: entry.duty.on.value, modifier: { style : { } } },
+                    off: { value: entry.duty.off.value, modifier: { style : { } } },
                 },
 
                 // Number of Passengers
-                num_passengers: { value: entry.num_passengers.value, modifier: {} },
+                num_passengers: { value: entry.num_passengers.value, modifier: { style : { } } },
 
                 // Hobbs start and end 
                 hobbs: {
-                    start: { value: entry.hobbs.start.value, modifier: {} },
-                    end: { value: entry.hobbs.end.value, modifier: {} },
+                    start: { value: entry.hobbs.start.value, modifier: { style : { } } },
+                    end: { value: entry.hobbs.end.value, modifier: { style : { } } },
                 },
 
                 // Tach start and end
                 tach: {
-                    start: { value: entry.tach.start.value, modifier: {} },
-                    end: { value: entry.tach.end.value, modifier: {} },
+                    start: { value: entry.tach.start.value, modifier: { style : { } } },
+                    end: { value: entry.tach.end.value, modifier: { style : { } } },
                 },
 
                 // Route
                 route: {
-                    distance: { value: entry.route.distance.value, modifier: {} },
+                    distance: { value: entry.route.distance.value, modifier: { style : { } } },
                 },
 
                 // Operations
                 operations: {
                     landings: {
-                        all: { value: entry.operations.landings.all.value, modifier: {} },
+                        all: { value: entry.operations.landings.all.value, modifier: { style : { } } },
                         full_stop: {
-                            day: { value: entry.operations.landings.full_stop.day.value, modifier: {} },
-                            night: { value: entry.operations.landings.full_stop.night.value, modifier: {} },
+                            day: { value: entry.operations.landings.full_stop.day.value, modifier: { style : { } } },
+                            night: { value: entry.operations.landings.full_stop.night.value, modifier: { style : { } } },
                         }
                     },
                     takeoffs: {
-                        day: { value: entry.operations.takeoffs.day.value, modifier: {} },
-                        night: { value: entry.operations.takeoffs.night.value, modifier: {} },
-                        all: { value: entry.operations.takeoffs.all.value, modifier: {} },
+                        day: { value: entry.operations.takeoffs.day.value, modifier: { style : { } } },
+                        night: { value: entry.operations.takeoffs.night.value, modifier: { style : { } } },
+                        all: { value: entry.operations.takeoffs.all.value, modifier: { style : { } } },
                     },
                     // Empty approaches list to be filled later
-                    approaches: { value: entry.operations.approaches.value, modifier: {} },
-                    holds: { value: entry.operations.holds.value, modifier: {} },
+                    approaches: { value: entry.operations.approaches.value, modifier: { style : { } } },
+                    holds: { value: entry.operations.holds.value, modifier: { style : { } } },
                 },
             };
 
@@ -524,122 +526,122 @@ define((require) => {
 
                     // Times
                     cross_country: {
-                        atp: { value: roundToTwo(entry.cross_country.atp.value + last.cross_country.atp.value), modifier: {} },
-                        point_to_point: { value: roundToTwo(entry.cross_country.point_to_point.value + last.cross_country.point_to_point.value), modifier: {} },
-                        normal: { value: roundToTwo(entry.cross_country.normal.value + last.cross_country.normal.value), modifier: {} },
+                        atp: { value: roundToTwo(entry.cross_country.atp.value + last.cross_country.atp.value), modifier: { style : { } } },
+                        point_to_point: { value: roundToTwo(entry.cross_country.point_to_point.value + last.cross_country.point_to_point.value), modifier: { style : { } } },
+                        normal: { value: roundToTwo(entry.cross_country.normal.value + last.cross_country.normal.value), modifier: { style : { } } },
                     },
-                    ground_training: { value: roundToTwo(entry.ground_training.value + last.ground_training.value), modifier: {} },
-                    night: { value: roundToTwo(entry.night.value + last.night.value), modifier: {} },
-                    pic: { value: roundToTwo(entry.pic.value + last.pic.value), modifier: {} },
-                    sic: { value: roundToTwo(entry.sic.value + last.sic.value), modifier: {} },
-                    solo: { value: roundToTwo(entry.solo.value + last.solo.value), modifier: {} },
-                    total: { value: roundToTwo(entry.total.value + last.total.value), modifier: {} },
+                    ground_training: { value: roundToTwo(entry.ground_training.value + last.ground_training.value), modifier: { style : { } } },
+                    night: { value: roundToTwo(entry.night.value + last.night.value), modifier: { style : { } } },
+                    pic: { value: roundToTwo(entry.pic.value + last.pic.value), modifier: { style : { } } },
+                    sic: { value: roundToTwo(entry.sic.value + last.sic.value), modifier: { style : { } } },
+                    solo: { value: roundToTwo(entry.solo.value + last.solo.value), modifier: { style : { } } },
+                    total: { value: roundToTwo(entry.total.value + last.total.value), modifier: { style : { } } },
 
                     // Set as 0 for now, will revisit later on
                     class: {
                         airplane: {
-                            single_engine_land: { value: roundToTwo(entry.class.airplane.single_engine_land.value + last.class.airplane.single_engine_land.value), modifier: {} },
-                            multi_engine_land: { value: roundToTwo(entry.class.airplane.multi_engine_land.value + last.class.airplane.multi_engine_land.value), modifier: {} },
-                            single_engine_sea: { value: roundToTwo(entry.class.airplane.single_engine_sea.value + last.class.airplane.single_engine_sea.value), modifier: {} },
-                            multi_engine_sea: { value: roundToTwo(entry.class.airplane.multi_engine_sea.value + last.class.airplane.multi_engine_sea.value), modifier: {} },
+                            single_engine_land: { value: roundToTwo(entry.class.airplane.single_engine_land.value + last.class.airplane.single_engine_land.value), modifier: { style : { } } },
+                            multi_engine_land: { value: roundToTwo(entry.class.airplane.multi_engine_land.value + last.class.airplane.multi_engine_land.value), modifier: { style : { } } },
+                            single_engine_sea: { value: roundToTwo(entry.class.airplane.single_engine_sea.value + last.class.airplane.single_engine_sea.value), modifier: { style : { } } },
+                            multi_engine_sea: { value: roundToTwo(entry.class.airplane.multi_engine_sea.value + last.class.airplane.multi_engine_sea.value), modifier: { style : { } } },
                         },
                         rotorcraft: {
-                            gyroplane: { value: roundToTwo(entry.class.rotorcraft.gyroplane.value + last.class.rotorcraft.gyroplane.value), modifier: {} },
-                            helicopter: { value: roundToTwo(entry.class.rotorcraft.helicopter.value + last.class.rotorcraft.helicopter.value), modifier: {} },
+                            gyroplane: { value: roundToTwo(entry.class.rotorcraft.gyroplane.value + last.class.rotorcraft.gyroplane.value), modifier: { style : { } } },
+                            helicopter: { value: roundToTwo(entry.class.rotorcraft.helicopter.value + last.class.rotorcraft.helicopter.value), modifier: { style : { } } },
                         },
-                        glider: { value: roundToTwo(entry.class.glider.value + last.class.glider.value), modifier: {} },
+                        glider: { value: roundToTwo(entry.class.glider.value + last.class.glider.value), modifier: { style : { } } },
                         lighter_than_air: {
-                            airship: { value: roundToTwo(entry.class.lighter_than_air.airship.value + last.class.lighter_than_air.airship.value), modifier: {} },
-                            balloon: { value: roundToTwo(entry.class.lighter_than_air.balloon.value + last.class.lighter_than_air.balloon.value), modifier: {} },
+                            airship: { value: roundToTwo(entry.class.lighter_than_air.airship.value + last.class.lighter_than_air.airship.value), modifier: { style : { } } },
+                            balloon: { value: roundToTwo(entry.class.lighter_than_air.balloon.value + last.class.lighter_than_air.balloon.value), modifier: { style : { } } },
                         },
-                        powered_lift: { value: roundToTwo(entry.class.powered_lift.value + last.class.powered_lift.value), modifier: {} },
+                        powered_lift: { value: roundToTwo(entry.class.powered_lift.value + last.class.powered_lift.value), modifier: { style : { } } },
                         powered_parachute: {
-                            land: { value: roundToTwo(entry.class.powered_parachute.land.value + last.class.powered_parachute.land.value), modifier: {} },
-                            sea: { value: roundToTwo(entry.class.powered_parachute.sea.value + last.class.powered_parachute.sea.value), modifier: {} },
+                            land: { value: roundToTwo(entry.class.powered_parachute.land.value + last.class.powered_parachute.land.value), modifier: { style : { } } },
+                            sea: { value: roundToTwo(entry.class.powered_parachute.sea.value + last.class.powered_parachute.sea.value), modifier: { style : { } } },
                         },
                         weight_shift_control: {
-                            land: { value: roundToTwo(entry.class.weight_shift_control.land.value + last.class.weight_shift_control.land.value), modifier: {} },
-                            sea: { value: roundToTwo(entry.class.weight_shift_control.sea.value + last.class.weight_shift_control.sea.value), modifier: {} },
+                            land: { value: roundToTwo(entry.class.weight_shift_control.land.value + last.class.weight_shift_control.land.value), modifier: { style : { } } },
+                            sea: { value: roundToTwo(entry.class.weight_shift_control.sea.value + last.class.weight_shift_control.sea.value), modifier: { style : { } } },
                         },
                         simulator: {
-                            full: { value: roundToTwo(entry.class.simulator.full.value + last.class.simulator.full.value), modifier: {} },
-                            flight_training_device: { value: roundToTwo(entry.class.simulator.flight_training_device.value + last.class.simulator.flight_training_device.value), modifier: {} },
-                            aviation_training_device: { value: roundToTwo(entry.class.simulator.aviation_training_device.value + last.class.simulator.aviation_training_device.value), modifier: {} },
+                            full: { value: roundToTwo(entry.class.simulator.full.value + last.class.simulator.full.value), modifier: { style : { } } },
+                            flight_training_device: { value: roundToTwo(entry.class.simulator.flight_training_device.value + last.class.simulator.flight_training_device.value), modifier: { style : { } } },
+                            aviation_training_device: { value: roundToTwo(entry.class.simulator.aviation_training_device.value + last.class.simulator.aviation_training_device.value), modifier: { style : { } } },
                         }
                     },
 
                     gear: {
                         fixed: {
-                            tailwheel: { value: roundToTwo(entry.gear.fixed.tailwheel.value + last.gear.fixed.tailwheel.value), modifier: {} },
-                            tricycle: { value: roundToTwo(entry.gear.fixed.tricycle.value + last.gear.fixed.tricycle.value), modifier: {} },
-                            any: { value: roundToTwo(entry.gear.fixed.any.value + last.gear.fixed.any.value), modifier: {} },
+                            tailwheel: { value: roundToTwo(entry.gear.fixed.tailwheel.value + last.gear.fixed.tailwheel.value), modifier: { style : { } } },
+                            tricycle: { value: roundToTwo(entry.gear.fixed.tricycle.value + last.gear.fixed.tricycle.value), modifier: { style : { } } },
+                            any: { value: roundToTwo(entry.gear.fixed.any.value + last.gear.fixed.any.value), modifier: { style : { } } },
                         },
                         retract: {
-                            tailwheel: { value: roundToTwo(entry.gear.retract.tailwheel.value + last.gear.retract.tailwheel.value), modifier: {} },
-                            tricycle: { value: roundToTwo(entry.gear.retract.tricycle.value + last.gear.retract.tricycle.value), modifier: {} },
-                            any: { value: roundToTwo(entry.gear.retract.any.value + last.gear.retract.any.value), modifier: {} },
+                            tailwheel: { value: roundToTwo(entry.gear.retract.tailwheel.value + last.gear.retract.tailwheel.value), modifier: { style : { } } },
+                            tricycle: { value: roundToTwo(entry.gear.retract.tricycle.value + last.gear.retract.tricycle.value), modifier: { style : { } } },
+                            any: { value: roundToTwo(entry.gear.retract.any.value + last.gear.retract.any.value), modifier: { style : { } } },
                         },
-                        amphibian: { value: roundToTwo(entry.gear.amphibian.value + last.gear.amphibian.value), modifier: {} },
-                        floats: { value: roundToTwo(entry.gear.floats.value + last.gear.floats.value), modifier: {} },
-                        skids: { value: roundToTwo(entry.gear.skids.value + last.gear.skids.value), modifier: {} },
-                        skis: { value: roundToTwo(entry.gear.skis.value + last.gear.skis.value), modifier: {} },
+                        amphibian: { value: roundToTwo(entry.gear.amphibian.value + last.gear.amphibian.value), modifier: { style : { } } },
+                        floats: { value: roundToTwo(entry.gear.floats.value + last.gear.floats.value), modifier: { style : { } } },
+                        skids: { value: roundToTwo(entry.gear.skids.value + last.gear.skids.value), modifier: { style : { } } },
+                        skis: { value: roundToTwo(entry.gear.skis.value + last.gear.skis.value), modifier: { style : { } } },
                     },
 
                     // Instrument flight
                     instrument: {
-                        actual: { value: roundToTwo(entry.instrument.actual.value + last.instrument.actual.value), modifier: {} },
-                        simulated: { value: roundToTwo(entry.instrument.simulated.value + last.instrument.simulated.value), modifier: {} },
+                        actual: { value: roundToTwo(entry.instrument.actual.value + last.instrument.actual.value), modifier: { style : { } } },
+                        simulated: { value: roundToTwo(entry.instrument.simulated.value + last.instrument.simulated.value), modifier: { style : { } } },
                     },
 
                     // Dual flight
                     dual: {
-                        given: { value: roundToTwo(entry.dual.given.value + last.dual.given.value), modifier: {} },
-                        received: { value: roundToTwo(entry.dual.received.value + last.dual.received.value), modifier: {} },
+                        given: { value: roundToTwo(entry.dual.given.value + last.dual.given.value), modifier: { style : { } } },
+                        received: { value: roundToTwo(entry.dual.received.value + last.dual.received.value), modifier: { style : { } } },
                     },
 
                     // Duty Times
                     duty: {
-                        on: { value: roundToTwo(entry.duty.on.value + last.duty.on.value), modifier: {} },
-                        off: { value: roundToTwo(entry.duty.off.value + last.duty.off.value), modifier: {} },
+                        on: { value: roundToTwo(entry.duty.on.value + last.duty.on.value), modifier: { style : { } } },
+                        off: { value: roundToTwo(entry.duty.off.value + last.duty.off.value), modifier: { style : { } } },
                     },
 
                     // Number of Passengers
-                    num_passengers: { value: roundToTwo(entry.num_passengers.value + last.num_passengers.value), modifier: {} },
+                    num_passengers: { value: roundToTwo(entry.num_passengers.value + last.num_passengers.value), modifier: { style : { } } },
 
                     // Hobbs start and end 
                     hobbs: {
-                        start: { value: roundToTwo(entry.hobbs.start.value + last.hobbs.start.value), modifier: {} },
-                        end: { value: roundToTwo(entry.hobbs.end.value + last.hobbs.end.value), modifier: {} },
+                        start: { value: roundToTwo(entry.hobbs.start.value + last.hobbs.start.value), modifier: { style : { } } },
+                        end: { value: roundToTwo(entry.hobbs.end.value + last.hobbs.end.value), modifier: { style : { } } },
                     },
 
                     // Tach start and end
                     tach: {
-                        start: { value: roundToTwo(entry.tach.start.value + last.tach.start.value), modifier: {} },
-                        end: { value: roundToTwo(entry.tach.end.value + last.tach.end.value), modifier: {} },
+                        start: { value: roundToTwo(entry.tach.start.value + last.tach.start.value), modifier: { style : { } } },
+                        end: { value: roundToTwo(entry.tach.end.value + last.tach.end.value), modifier: { style : { } } },
                     },
 
                     // Route
                     route: {
-                        distance: { value: roundToTwo(entry.route.distance.value + last.route.distance.value), modifier: {} },
+                        distance: { value: roundToTwo(entry.route.distance.value + last.route.distance.value), modifier: { style : { } } },
                     },
 
                     // Operations
                     operations: {
                         landings: {
-                            all: { value: roundToTwo(entry.operations.landings.all.value + last.operations.landings.all.value), modifier: {} },
+                            all: { value: roundToTwo(entry.operations.landings.all.value + last.operations.landings.all.value), modifier: { style : { } } },
                             full_stop: {
-                                day: { value: roundToTwo(entry.operations.landings.full_stop.day.value + last.operations.landings.full_stop.day.value), modifier: {} },
-                                night: { value: roundToTwo(entry.operations.landings.full_stop.night.value + last.operations.landings.full_stop.night.value), modifier: {} },
+                                day: { value: roundToTwo(entry.operations.landings.full_stop.day.value + last.operations.landings.full_stop.day.value), modifier: { style : { } } },
+                                night: { value: roundToTwo(entry.operations.landings.full_stop.night.value + last.operations.landings.full_stop.night.value), modifier: { style : { } } },
                             }
                         },
                         takeoffs: {
-                            day: { value: roundToTwo(entry.operations.takeoffs.day.value + last.operations.takeoffs.day.value), modifier: {} },
-                            night: { value: roundToTwo(entry.operations.takeoffs.night.value + last.operations.takeoffs.night.value), modifier: {} },
-                            all: { value: roundToTwo(entry.operations.takeoffs.all.value + last.operations.takeoffs.all.value), modifier: {} },
+                            day: { value: roundToTwo(entry.operations.takeoffs.day.value + last.operations.takeoffs.day.value), modifier: { style : { } } },
+                            night: { value: roundToTwo(entry.operations.takeoffs.night.value + last.operations.takeoffs.night.value), modifier: { style : { } } },
+                            all: { value: roundToTwo(entry.operations.takeoffs.all.value + last.operations.takeoffs.all.value), modifier: { style : { } } },
                         },
                         // Empty approaches list to be filled later
-                        approaches: { value: roundToTwo(entry.operations.approaches.value + last.operations.approaches.value), modifier: {} },
-                        holds: { value: roundToTwo(entry.operations.holds.value + last.operations.holds.value), modifier: {} },
+                        approaches: { value: roundToTwo(entry.operations.approaches.value + last.operations.approaches.value), modifier: { style : { } } },
+                        holds: { value: roundToTwo(entry.operations.holds.value + last.operations.holds.value), modifier: { style : { } } },
                     },
                 };
             }
@@ -716,11 +718,31 @@ define((require) => {
 
                 // Point the schema
                 schema = schema[elem];
-            }
+            }            
+
+            // Assume for a second that the previous value was the original value
+            let original = schema[addressList[addressList.length - 1]].value;
+
+            // See if this entry has 'original' included in its modifier object. If it does, then
+            // that is the actual origional value
+            if ('original' in schema[addressList[addressList.length - 1]].modifier) 
+                original = schema[addressList[addressList.length - 1]].modifier.original;
+
+            // If there is no original entry yet, then add it now. The last value must be the orig.
+            else schema[addressList[addressList.length - 1]].modifier.original = original;
 
             // Write the schema value at the last element in the addressList
             schema[addressList[addressList.length - 1]].value = value;
-            schema[addressList[addressList.length - 1]].modifier.edited = true;
+
+            // If the value has changed from the original, then mark it as edited. Otherwise remove
+            // any such markings 
+            if (value !== original) {
+                schema[addressList[addressList.length - 1]].modifier.style.edited = true;
+                schema[addressList[addressList.length - 1]].modifier.tooltip = `Was ${original}`;
+            } else {
+                delete schema[addressList[addressList.length - 1]].modifier.style.edited;
+                delete schema[addressList[addressList.length - 1]].modifier.tooltip;
+            }
 
             // Now that we have edited the data, it is not longer consistent with the original
             // csv file that was imported. Run the event callback if defined
